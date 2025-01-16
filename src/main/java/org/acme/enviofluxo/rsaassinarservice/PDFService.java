@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.util.Base64;
 
 @ApplicationScoped
 public class PDFService {
@@ -36,7 +37,8 @@ public class PDFService {
             contentStream.beginText();
             contentStream.setFont(PDType1Font.HELVETICA, 8);
             contentStream.newLineAtOffset(50, 30);
-            contentStream.showText("Assinatura Digital: " + signature);
+             String ass = base64ToHex(signature);
+            contentStream.showText("Assinatura Digital: " + ass);
             contentStream.endText();
 
             contentStream.close();
@@ -46,6 +48,20 @@ public class PDFService {
             return baos.toByteArray();
         }
     }
+
+
+        public static String base64ToHex(String base64Signature) {
+            byte[] decodedBytes = Base64.getDecoder().decode(base64Signature);
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : decodedBytes) {
+                String hex = Integer.toHexString(0xFF & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        }
 
     public byte[] getDocumentHash(byte[] pdfBytes) throws Exception {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");

@@ -21,8 +21,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -92,10 +91,19 @@ public class DocumentSignatureResource {
 
             LOG.info("Arquivo lido com sucesso. Tamanho: " + pdfBytes.length + " bytes");
 
+
+
+
             // Processar o documento
             byte[] documentHash = pdfService.getDocumentHash(pdfBytes);
             String signature = rsaService.signDocument(documentHash);
             byte[] signedPdf = pdfService.addSignatureToDocument(pdfBytes, signature);
+
+            try (FileOutputStream fos = new FileOutputStream(new File("C:\\Users\\DELL\\OneDrive\\Documentos\\documento_assinado.pdf"))) {
+                fos.write(signedPdf);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             // Registrar a assinatura na blockchain
             String dataToStore = "Hash: " + Base64.getEncoder().encodeToString(documentHash) + ", Signature: " + signature;
@@ -114,13 +122,14 @@ public class DocumentSignatureResource {
             response.setSignature(signature);
             response.setSignedPdf(Base64.getEncoder().encodeToString(signedPdf));
             response.setPublicKey(Base64.getEncoder().encodeToString(rsaService.getPublicKey().getEncoded()));
-            response.setMessage("Document signed successfully and recorded in blockchain.");
+            response.setMessage(" Sua solicitação foi gerada, favor aguardar um email para fazer assinatura.");
 
 
             // to-do fazer a inserção na base
 
 
-            return Response.ok(response).build();
+
+            return Response.ok(response.getMessage()).build();
 
         } catch (Exception e) {
             LOG.error("Erro no processo de assinatura", e);
