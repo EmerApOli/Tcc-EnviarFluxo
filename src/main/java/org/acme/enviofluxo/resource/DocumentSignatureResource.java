@@ -116,6 +116,10 @@ public class DocumentSignatureResource {
             response.setPublicKey(Base64.getEncoder().encodeToString(rsaService.getPublicKey().getEncoded()));
             response.setMessage("Document signed successfully and recorded in blockchain.");
 
+
+            // to-do fazer a inserção na base
+
+
             return Response.ok(response).build();
 
         } catch (Exception e) {
