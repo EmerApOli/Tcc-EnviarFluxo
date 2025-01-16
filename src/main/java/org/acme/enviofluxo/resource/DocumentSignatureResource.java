@@ -120,6 +120,7 @@ public class DocumentSignatureResource {
 
         } catch (Exception e) {
             LOG.error("Erro no processo de assinatura", e);
+            LOG.info("Enviando solicitação de cancelamento para o Orquestrador");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse(e.getMessage()))
                     .build();
