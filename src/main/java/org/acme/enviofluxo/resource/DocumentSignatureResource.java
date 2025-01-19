@@ -115,7 +115,9 @@ public class DocumentSignatureResource {
          //   String payloadJson = payloadPart.getBodyAsString();
          //   ObjectMapper objectMapper = new ObjectMapper();
             DadosBasicos dadosBasicos = dadosBasicosService.getDadosBasicos();
-           //  sendKafkaMessage(dadosBasicos);
+
+         //   sendKafkaMessage(dadosBasicos);
+          //  LOG.info("Enviando dados processados para Orquestdrador");
 
             // Criar resposta
             SignatureResponse response = new SignatureResponse();
@@ -134,6 +136,8 @@ public class DocumentSignatureResource {
         } catch (Exception e) {
             LOG.error("Erro no processo de assinatura", e);
             LOG.info("Enviando solicitação de cancelamento para o Orquestrador");
+
+
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse(e.getMessage()))
                     .build();
@@ -157,6 +161,7 @@ public class DocumentSignatureResource {
         try {
             // Enviando a mensagem para Kafka
             kafkaConfig.consume(message);
+
         } catch (Exception e) {
             LOGGER.error("Failed to send message to Kafka: {}", message, e);
             // Aqui você pode optar por lançar uma exceção ou registrar o erro conforme necessário
