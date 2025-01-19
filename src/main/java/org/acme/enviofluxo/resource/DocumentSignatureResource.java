@@ -116,8 +116,15 @@ public class DocumentSignatureResource {
          //   ObjectMapper objectMapper = new ObjectMapper();
             DadosBasicos dadosBasicos = dadosBasicosService.getDadosBasicos();
 
+            if( dadosBasicos == null){
+
+                LOG.info("Não existe informação  de Dados para gravar" + dadosBasicos);
+
+                throw  new Exception("Erro ao tentar gravar os dados");
+
+            }
          //   sendKafkaMessage(dadosBasicos);
-          //  LOG.info("Enviando dados processados para Orquestdrador");
+           LOG.info("Dados para gravar" + dadosBasicos);
 
             // Criar resposta
             SignatureResponse response = new SignatureResponse();

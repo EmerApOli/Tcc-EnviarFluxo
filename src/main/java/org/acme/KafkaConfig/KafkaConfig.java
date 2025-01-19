@@ -21,6 +21,10 @@ public class KafkaConfig {
     @Channel("envia-fluxo-compensation")
     Emitter<DadosBasicos> compensationEmitter;
 
+    @Inject
+    @Channel("envia-fluxo-orquestrador")
+    Emitter<DadosBasicos> enviarfluxoorquestrador;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Incoming("envia-fluxo")
     public void consume(String message) {
@@ -28,7 +32,10 @@ public class KafkaConfig {
             // Deserializando a mensagem JSON para o DTO
             DadosBasicos dadosBasicos = processMessage(message);
             // Armazena os dados no serviço
+
+
             dadosBasicosService.setDadosBasicos(dadosBasicos);
+
 
             // Processar a mensagem recebida
             System.out.println("Mensagem recebida: " + dadosBasicos);
