@@ -1,10 +1,10 @@
-package org.acme.enviofluxo.services;
+package org.acme.enviofluxo.external;
 
 
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.acme.enviofluxo.DTO.DadosBasicos;
+import org.acme.enviofluxo.external.DTO.DadosBasicos;
 
 
 @AllArgsConstructor

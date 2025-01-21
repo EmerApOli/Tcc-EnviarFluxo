@@ -48,6 +48,26 @@
             </dependency>
 
 
+            <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-hibernate-orm-panache -->
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-hibernate-orm-panache</artifactId>
+                <version>3.17.5</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-jdbc-postgresql</artifactId>
+            </dependency>
+
+            <!-- Quarkus Hibernate ORM para suporte a JPA -->
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-hibernate-orm</artifactId>
+            </dependency>
+
+
             <!-- https://mvnrepository.com/artifact/jakarta.transaction/jakarta.transaction-api -->
             <dependency>
                 <groupId>jakarta.transaction</groupId>

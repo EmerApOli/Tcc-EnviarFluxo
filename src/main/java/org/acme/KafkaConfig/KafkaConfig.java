@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.inject.Inject;
-import org.acme.enviofluxo.DTO.DadosBasicos;
-import org.acme.enviofluxo.services.DadosBasicosService;
+import org.acme.enviofluxo.external.DTO.DadosBasicos;
+import org.acme.enviofluxo.external.DadosBasicosService;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Incoming;

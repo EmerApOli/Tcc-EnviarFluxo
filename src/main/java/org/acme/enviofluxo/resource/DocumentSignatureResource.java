@@ -1,6 +1,5 @@
 package org.acme.enviofluxo.resource;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -11,12 +10,12 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import org.acme.KafkaConfig.KafkaConfig;
-import org.acme.enviofluxo.DTO.DadosBasicos;
+import org.acme.enviofluxo.external.DTO.DadosBasicos;
 import org.acme.enviofluxo.blockchainservice.Blockchain;
 import org.acme.enviofluxo.rsaassinarservice.PDFService;
 import org.acme.enviofluxo.rsaassinarservice.RSAService;
 import org.acme.enviofluxo.rsaassinarservice.SignatureResponse;
-import org.acme.enviofluxo.services.DadosBasicosService;
+import org.acme.enviofluxo.external.DadosBasicosService;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;

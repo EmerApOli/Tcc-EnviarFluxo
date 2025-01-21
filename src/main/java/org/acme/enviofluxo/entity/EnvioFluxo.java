@@ -1,18 +1,38 @@
 package org.acme.enviofluxo.entity;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import org.acme.enviofluxo.DTO.DadosBasicos;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import io.quarkus.hibernate.orm.panache.PanacheEntity_;
+import jakarta.persistence.*;
+import lombok.*;
+import org.acme.enviofluxo.external.DTO.DadosBasicos;
 
-@AllArgsConstructor
+import java.io.Serializable;
+
 @Data
-public class EnvioFluxo {
+@Builder
+@NoArgsConstructor // Gera o construtor padrão
+@AllArgsConstructor
+@Entity
+ @EqualsAndHashCode(callSuper=false)
+public class EnvioFluxo extends PanacheEntityBase implements Serializable {
 
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private  long id;
+
+  //  private DadosBasicos dadosBasicos;
+    @ManyToOne
+    @JoinColumn(name = "documento_id", nullable = false)
     private  Documentos documentos;
+
+    @ManyToOne
+    @JoinColumn(name = "interessado_cpf", nullable = false)
     private  Interessado interessado;
-    private DadosBasicos dadosBasicos;
+
 
 
 }

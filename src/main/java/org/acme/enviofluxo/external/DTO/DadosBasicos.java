@@ -1,12 +1,17 @@
-package org.acme.enviofluxo.DTO;
+package org.acme.enviofluxo.external.DTO;
 
 
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.io.Serializable;
+@Embeddable
 @AllArgsConstructor
 @Data
-public class DadosBasicos {
+public class DadosBasicos  implements Serializable {
+
+    private  static  final Long serialVersionUID = 1L;
 
 
     private Long id;
