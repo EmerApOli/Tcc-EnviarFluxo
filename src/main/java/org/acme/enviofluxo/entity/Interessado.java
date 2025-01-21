@@ -29,6 +29,7 @@ public class Interessado extends PanacheEntityBase implements Serializable {
     private  String descricao;
     @Column(name = "cargo")
     private String  cargo;
-
+    @Column(name = "idiniciofluxo")
+   private  Long idiniciofluxo;
 
 }
