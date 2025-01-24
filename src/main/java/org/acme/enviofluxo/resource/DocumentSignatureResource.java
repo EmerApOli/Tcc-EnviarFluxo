@@ -158,7 +158,7 @@ public class DocumentSignatureResource {
 
             envioDTO.setDocumenthash(Arrays.toString(documentHash));
             envioDTO.setInteressado(interessado);
-            envioDTO.setIdInicioFluxo(dadosBasicos.getId());
+            envioDTO.setIdiniciofluxo(dadosBasicos.getId());
 
 
 

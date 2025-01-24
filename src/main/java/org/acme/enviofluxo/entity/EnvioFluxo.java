@@ -26,9 +26,9 @@ public class EnvioFluxo extends PanacheEntityBase implements Serializable {
     @Column(name = "id")
     private  long id;
 
-    @Column(name = "IdInicioFluxo")
-    private Long IdInicioFluxo;
-
+    @Column(name = "idiniciofluxo")
+    private Long idiniciofluxo;
+    @Column(name = "documenthash")
     private  String documenthash;
 
     @ManyToOne
@@ -40,7 +40,7 @@ public class EnvioFluxo extends PanacheEntityBase implements Serializable {
     public  EnvioFluxo(EnvioDTO envioDTO){
         this.documenthash =  envioDTO.getDocumenthash();
         this.interessado = envioDTO.getInteressado();
-        this.IdInicioFluxo= envioDTO.getIdInicioFluxo();
+        this.idiniciofluxo= envioDTO.getIdiniciofluxo();
 
     }
 
