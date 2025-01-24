@@ -1,16 +1,15 @@
 package org.acme.enviofluxo.services;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import org.acme.enviofluxo.entity.Documentos;
 import org.acme.enviofluxo.entity.Interessado;
 
 
 @ApplicationScoped
-public class DocumentoService {
+public class InteressadoService {
 
 
-    public Documentos buscarPorCpf(Long id) {
-        return Documentos.findById(id);
+    public Interessado buscarPorCpf(Long cpf) {
+        return Interessado.findByCpf(cpf);
     }
 
 }

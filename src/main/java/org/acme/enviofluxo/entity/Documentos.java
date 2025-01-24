@@ -17,7 +17,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper=false)
 public class Documentos  extends PanacheEntityBase implements Serializable {
 
-
+    private  static  final Long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,4 +28,13 @@ public class Documentos  extends PanacheEntityBase implements Serializable {
     private String tipo;
     @JoinColumn(name = "descricao")
     private String descricao;
+
+
+
+
+    public static Interessado findByCpf(Long id) {
+        return find("id", id).firstResult();
+    }
 }
+
+

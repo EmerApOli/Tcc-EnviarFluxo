@@ -6,4 +6,5 @@ import org.acme.enviofluxo.entity.EnvioFluxo;
 public class EnvioRepositry  implements PanacheRepository<EnvioFluxo> {
 
 
+
 }

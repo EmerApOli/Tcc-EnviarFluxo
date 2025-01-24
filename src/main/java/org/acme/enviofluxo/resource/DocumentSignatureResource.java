@@ -1,5 +1,6 @@
 package org.acme.enviofluxo.resource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -10,21 +11,24 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import org.acme.KafkaConfig.KafkaConfig;
+import org.acme.enviofluxo.dto.EnvioDTO;
+import org.acme.enviofluxo.dto.InteressadoDTO;
+import org.acme.enviofluxo.entity.Interessado;
 import org.acme.enviofluxo.external.DTO.DadosBasicos;
 import org.acme.enviofluxo.blockchainservice.Blockchain;
 import org.acme.enviofluxo.rsaassinarservice.PDFService;
 import org.acme.enviofluxo.rsaassinarservice.RSAService;
 import org.acme.enviofluxo.rsaassinarservice.SignatureResponse;
 import org.acme.enviofluxo.external.DadosBasicosService;
+import org.acme.enviofluxo.services.DocumentoService;
+import org.acme.enviofluxo.services.EnvioService;
+import org.acme.enviofluxo.services.InteressadoService;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import java.io.*;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.hibernate.sql.results.LoadingLogger.LOGGER;
 
@@ -46,6 +50,15 @@ public class DocumentSignatureResource {
 
     @Inject
     PDFService pdfService;
+
+    @Inject
+    EnvioService envioService;
+
+    @Inject
+    private InteressadoService interessadoService;
+
+    @Inject
+    private DocumentoService documentoService;
 
     @POST
     @Path("/sign")
@@ -109,21 +122,50 @@ public class DocumentSignatureResource {
             blockchain.addBlock(dataToStore);
 
 
-            // Processar o payload JSON
-           // InputPart payloadPart = uploadForm.get("dadosbasicos").get(0);
+            // Processar o payload JSONInputPart payloadPart = uploadForm.get("dadosbasicos").get(0);
          //   String payloadJson = payloadPart.getBodyAsString();
          //   ObjectMapper objectMapper = new ObjectMapper();
+
+            blockchain.addBlock(dataToStore);
+            List<InputPart> interessadosParts = uploadForm.get("interessados");
+
+
+        //   if (interessadosParts != null && !interessadosParts.isEmpty()) {
+               InputPart interessadosPart = interessadosParts.get(0);
+               String interessadosJson = interessadosPart.getBodyAsString();
+
+              ObjectMapper objectMapper = new ObjectMapper();
+                InteressadoDTO interessadoDTO = objectMapper.readValue(interessadosJson, InteressadoDTO.class);
+     //      }
+
+
+
             DadosBasicos dadosBasicos = dadosBasicosService.getDadosBasicos();
 
-            if( dadosBasicos == null){
+           if( dadosBasicos == null){
 
-                LOG.info("Não existe informação  de Dados para gravar" + dadosBasicos);
+               LOG.info("Não existe informação  de Dados para gravar" + dadosBasicos);
 
                 throw  new Exception("Erro ao tentar gravar os dados");
 
             }
-         //   sendKafkaMessage(dadosBasicos);
-           LOG.info("Dados para gravar" + dadosBasicos);
+            sendKafkaMessage(dadosBasicos);
+          LOG.info("Dados para gravar" + dadosBasicos);
+
+            Interessado interessado = interessadoService.buscarPorCpf(interessadoDTO.getCpf());
+
+            EnvioDTO envioDTO =  new EnvioDTO();
+
+            envioDTO.setDocumenthash(Arrays.toString(documentHash));
+            envioDTO.setInteressado(interessado);
+            envioDTO.setIdInicioFluxo(dadosBasicos.getId());
+
+
+
+
+            envioService.InseerirEnvio(envioDTO);
+
+
 
             // Criar resposta
             SignatureResponse response = new SignatureResponse();
