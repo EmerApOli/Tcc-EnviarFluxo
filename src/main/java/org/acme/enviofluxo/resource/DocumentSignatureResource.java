@@ -10,7 +10,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.acme.KafkaConfig.KafkaConfig;
 import org.acme.enviofluxo.dto.EnvioDTO;
 import org.acme.enviofluxo.dto.InteressadoDTO;
 import org.acme.enviofluxo.entity.Interessado;
@@ -30,8 +29,6 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import java.io.*;
 import java.util.*;
 
-import static org.hibernate.sql.results.LoadingLogger.LOGGER;
-
 @Path("/document")
 @ApplicationScoped
 public class DocumentSignatureResource {
@@ -45,8 +42,7 @@ public class DocumentSignatureResource {
 
     @Inject
     DadosBasicosService dadosBasicosService;
-    @Inject
-    KafkaConfig kafkaConfig;
+
 
     @Inject
     PDFService pdfService;
@@ -149,7 +145,7 @@ public class DocumentSignatureResource {
                 throw  new Exception("Erro ao tentar gravar os dados");
 
             }
-            sendKafkaMessage(dadosBasicos);
+            //sendKafkaMessage(dadosBasicos);
           LOG.info("Dados para gravar" + dadosBasicos);
 
             Interessado interessado = interessadoService.buscarPorCpf(interessadoDTO.getCpf());
@@ -198,21 +194,5 @@ public class DocumentSignatureResource {
         return response;
     }
 
-    private void sendKafkaMessage(DadosBasicos dadosBasicos) {
-        // Geração da mensagem
-        String message = String.format("id: %d, nome: %s, descrição: %s, status: %s, Tipo: %s",
-                dadosBasicos.getId(),  // Incluindo o ID aqui
-                dadosBasicos.getNome(),
-                dadosBasicos.getDescricao(),
-                dadosBasicos.getStatus(),
-                dadosBasicos.getTipoassinatura());
-        try {
-            // Enviando a mensagem para Kafka
-            kafkaConfig.consume(message);
 
-        } catch (Exception e) {
-            LOGGER.error("Failed to send message to Kafka: {}", message, e);
-            // Aqui você pode optar por lançar uma exceção ou registrar o erro conforme necessário
-        }
-    }
 }
