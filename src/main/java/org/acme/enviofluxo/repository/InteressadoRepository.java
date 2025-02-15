@@ -1,6 +1,9 @@
 package org.acme.enviofluxo.repository;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.acme.enviofluxo.entity.Interessado;
 
-public class InteressadoRepository implements PanacheRepository<EnvioRepositry> {
+@ApplicationScoped
+public class InteressadoRepository implements PanacheRepository<Interessado> {
 }

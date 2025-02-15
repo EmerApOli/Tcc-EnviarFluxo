@@ -10,15 +10,17 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import org.acme.enviofluxo.dto.DadosBasicosDTO;
+import org.acme.enviofluxo.dto.DadosEnvioGeralDTO;
 import org.acme.enviofluxo.dto.EnvioDTO;
 import org.acme.enviofluxo.dto.InteressadoDTO;
-import org.acme.enviofluxo.entity.Interessado;
-import org.acme.enviofluxo.external.DTO.DadosBasicos;
 import org.acme.enviofluxo.blockchainservice.Blockchain;
+import org.acme.enviofluxo.entity.DadosBasicos;
+import org.acme.enviofluxo.entity.Interessado;
 import org.acme.enviofluxo.rsaassinarservice.PDFService;
 import org.acme.enviofluxo.rsaassinarservice.RSAService;
 import org.acme.enviofluxo.rsaassinarservice.SignatureResponse;
-import org.acme.enviofluxo.external.DadosBasicosService;
+import org.acme.enviofluxo.services.DadosBasicosService;
 import org.acme.enviofluxo.services.DocumentoService;
 import org.acme.enviofluxo.services.EnvioService;
 import org.acme.enviofluxo.services.InteressadoService;
@@ -45,13 +47,15 @@ public class DocumentSignatureResource {
 
 
     @Inject
+    InteressadoService interessadoService;
+
+    @Inject
     PDFService pdfService;
 
     @Inject
     EnvioService envioService;
 
-    @Inject
-    private InteressadoService interessadoService;
+
 
     @Inject
     private DocumentoService documentoService;
@@ -63,6 +67,7 @@ public class DocumentSignatureResource {
     public Response signDocument(MultipartFormDataInput input) {
         try {
             LOG.info("Iniciando processo de assinatura");
+
 
             String idfluxo = UUID.randomUUID().toString();
 
@@ -123,38 +128,49 @@ public class DocumentSignatureResource {
          //   ObjectMapper objectMapper = new ObjectMapper();
 
             blockchain.addBlock(dataToStore);
-            List<InputPart> interessadosParts = uploadForm.get("interessados");
+            List<InputPart> dadosenviogeralParts = uploadForm.get("dadosenviogeral");
+
+
 
 
         //   if (interessadosParts != null && !interessadosParts.isEmpty()) {
-               InputPart interessadosPart = interessadosParts.get(0);
-               String interessadosJson = interessadosPart.getBodyAsString();
+               InputPart dadosenviogeralPart = dadosenviogeralParts.get(0);
+               String interessadosJson = dadosenviogeralPart.getBodyAsString();
 
               ObjectMapper objectMapper = new ObjectMapper();
-                InteressadoDTO interessadoDTO = objectMapper.readValue(interessadosJson, InteressadoDTO.class);
+              DadosEnvioGeralDTO  dadosEnvioGeralDTO = objectMapper.readValue(interessadosJson, DadosEnvioGeralDTO.class);
      //      }
 
 
+              InteressadoDTO  interessadobandoDTO = new InteressadoDTO();
 
-            DadosBasicos dadosBasicos = dadosBasicosService.getDadosBasicos();
+            interessadobandoDTO.setCpf(dadosEnvioGeralDTO.getInteressadoDTO().getCpf());
+            interessadobandoDTO.setNome(dadosEnvioGeralDTO.getInteressadoDTO().getNome());
+            interessadobandoDTO.setDescricao(dadosEnvioGeralDTO.getInteressadoDTO().getDescricao());
+            interessadobandoDTO.setCargo(dadosEnvioGeralDTO.getInteressadoDTO().getCargo());
 
-           if( dadosBasicos == null){
+            Interessado interessado =  interessadoService.SalvarInteressado(interessadobandoDTO);
+            DadosBasicosDTO dadosBasicosDTO  = new DadosBasicosDTO();
 
-               LOG.info("Não existe informação  de Dados para gravar" + dadosBasicos);
+            dadosBasicosDTO.setNome(dadosEnvioGeralDTO.getDadosBasicosDTO().getNome());
+            dadosBasicosDTO.setDescricao(dadosEnvioGeralDTO.getDadosBasicosDTO().getDescricao());
+            dadosBasicosDTO.setStatus(dadosEnvioGeralDTO.getDadosBasicosDTO().getStatus());
+            dadosBasicosDTO.setTipoassinatura(dadosEnvioGeralDTO.getDadosBasicosDTO().getTipoassinatura());
 
-                throw  new Exception("Erro ao tentar gravar os dados");
 
-            }
-            //sendKafkaMessage(dadosBasicos);
-          LOG.info("Dados para gravar" + dadosBasicos);
+            DadosBasicos dadosBasicosGravar =  dadosBasicosService.create(dadosBasicosDTO);
 
-            Interessado interessado = interessadoService.buscarPorCpf(interessadoDTO.getCpf());
+
+
+
+          //  Interessado interessado = interessadoService.buscarPorCpf(interessadoDTO.getCpf());
 
             EnvioDTO envioDTO =  new EnvioDTO();
 
             envioDTO.setDocumenthash(Arrays.toString(documentHash));
             envioDTO.setInteressado(interessado);
-            envioDTO.setIdiniciofluxo(dadosBasicos.getId());
+            envioDTO.setDadosBasicos(dadosBasicosGravar);
+
 
 
 

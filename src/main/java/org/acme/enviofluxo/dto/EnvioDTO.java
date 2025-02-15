@@ -6,6 +6,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.acme.enviofluxo.entity.DadosBasicos;
 import org.acme.enviofluxo.entity.Interessado;
 
 @AllArgsConstructor
@@ -16,7 +17,7 @@ public class EnvioDTO {
     private  Long   id;
     private  String documenthash;
 
-    private Long idiniciofluxo;
+    private DadosBasicos dadosBasicos;
     private  Interessado interessado;
 
 

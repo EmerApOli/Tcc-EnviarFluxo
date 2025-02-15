@@ -15,7 +15,7 @@ import java.io.Serializable;
 @NoArgsConstructor // Gera o construtor padrão
 @AllArgsConstructor
 @Entity
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper=false)
 @Table(name = "dadosbasicos")
 public class DadosBasicos extends PanacheEntityBase implements Serializable {
 
@@ -25,7 +25,6 @@ public class DadosBasicos extends PanacheEntityBase implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
 
     @Column(name = "id")
     private Long id;
@@ -46,8 +45,9 @@ public class DadosBasicos extends PanacheEntityBase implements Serializable {
         this.nome = dadosBasicosDTO.getNome();
         this.descricao = dadosBasicosDTO.getDescricao();
         this.status = dadosBasicosDTO.getStatus();
-        this.tipoassinatura = dadosBasicosDTO.getTipoassinatuta();
+        this.tipoassinatura = dadosBasicosDTO.getTipoassinatura();
 
     }
+
 
 }

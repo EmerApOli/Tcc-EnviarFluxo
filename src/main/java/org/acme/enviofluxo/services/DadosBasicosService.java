@@ -2,6 +2,7 @@ package org.acme.enviofluxo.services;
 
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.acme.enviofluxo.dto.DadosBasicosDTO;
 import org.acme.enviofluxo.entity.DadosBasicos;
@@ -27,11 +28,18 @@ public class DadosBasicosService {
     }
 
     public DadosBasicos findById(Long id) {
-        return DadosBasicos.findById(id);  // Método estático fornecido pelo PanacheEntityBase
+        DadosBasicos dadosBasicos = DadosBasicos.findById(id);  // Método estático fornecido pelo PanacheEntityBase
+        if (dadosBasicos == null) {
+            throw new EntityNotFoundException("DadosBasicos not found for ID: " + id);
+        }
+        return dadosBasicos;
     }
 
     public void delete(Long id) {
-        DadosBasicos.deleteById(id);  // Método estático fornecido pelo PanacheEntityBase
+        boolean deleted = DadosBasicos.deleteById(id);  // Método estático fornecido pelo PanacheEntityBase
+        if (!deleted) {
+            throw new EntityNotFoundException("DadosBasicos not found for ID: " + id);
+        }
     }
 
 

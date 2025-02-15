@@ -7,7 +7,6 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity_;
 import jakarta.persistence.*;
 import lombok.*;
 import org.acme.enviofluxo.dto.EnvioDTO;
-import org.acme.enviofluxo.external.DTO.DadosBasicos;
 
 import java.io.Serializable;
 
@@ -26,9 +25,7 @@ public class EnvioFluxo extends PanacheEntityBase implements Serializable {
     @Column(name = "id")
     private  long id;
 
-    @Column(name = "idiniciofluxo")
-    private Long idiniciofluxo;
-    @Column(name = "documenthash")
+     @Column(name = "documenthash")
     private  String documenthash;
 
     @ManyToOne
@@ -37,11 +34,21 @@ public class EnvioFluxo extends PanacheEntityBase implements Serializable {
 
 
 
+    @ManyToOne
+    @JoinColumn(name = "id_dadosbasicos", nullable = false)
+    private DadosBasicos  dadosBasicos;
+
+
+
     public  EnvioFluxo(EnvioDTO envioDTO){
         this.documenthash =  envioDTO.getDocumenthash();
         this.interessado = envioDTO.getInteressado();
-        this.idiniciofluxo= envioDTO.getIdiniciofluxo();
+        this.dadosBasicos= envioDTO.getDadosBasicos();
 
+    }
+
+    public static DadosBasicos findByCpf(Long id) {
+        return find("id", id).firstResult();
     }
 
 }

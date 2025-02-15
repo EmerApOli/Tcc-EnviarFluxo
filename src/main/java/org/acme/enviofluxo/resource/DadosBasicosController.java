@@ -7,7 +7,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.acme.enviofluxo.dto.DadosBasicosDTO;
 import org.acme.enviofluxo.entity.DadosBasicos;
+
 import org.acme.enviofluxo.services.DadosBasicosService;
+import org.acme.enviofluxo.services.InteressadoService;
 
 
 import static org.hibernate.sql.results.LoadingLogger.LOGGER;
@@ -19,6 +21,9 @@ public class DadosBasicosController {
 
     @Inject
     DadosBasicosService dadosBasicosService;
+
+
+
 
     @POST
     public Response createDadosBasicos( DadosBasicosDTO dadosBasicosDTO) throws Exception {
@@ -32,7 +37,7 @@ public class DadosBasicosController {
                 dadosBasicosDTO.getNome(),
                 dadosBasicosDTO.getDescricao(),
                 dadosBasicosDTO.getStatus(),
-                dadosBasicosDTO.getTipoassinatuta(),
+                dadosBasicosDTO.getTipoassinatura(),
                 idGerado); // Aqui estamos passando o idGerado corretamente
       //  kafkaConfig.sendMessage(message);
 

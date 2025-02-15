@@ -1,18 +1,16 @@
 package org.acme.enviofluxo.dto;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.*;
 import org.acme.enviofluxo.entity.Interessado;
 
 import java.io.Serializable;
 
-@AllArgsConstructor
 @Data
+@Builder
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class InteressadoDTO implements Serializable {
 
     private  Long cpf;
@@ -23,7 +21,7 @@ public class InteressadoDTO implements Serializable {
 
     private String  cargo;
 
-    private  Long idiniciofluxo;
+
 
 
     public  InteressadoDTO(Interessado interessado){
@@ -37,6 +35,6 @@ public class InteressadoDTO implements Serializable {
 
     }
 
-    InteressadoDTO(){}
+    public InteressadoDTO(){}
 
 }
