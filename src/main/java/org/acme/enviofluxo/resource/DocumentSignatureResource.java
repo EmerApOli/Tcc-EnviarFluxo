@@ -66,11 +66,7 @@ public class DocumentSignatureResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response signDocument(MultipartFormDataInput input) {
         try {
-            LOG.info("Iniciando processo de assinatura");
-
-
-            String idfluxo = UUID.randomUUID().toString();
-
+            LOG.info("Iniciando processo de armazenamento do documento");
 
             // Obter o arquivo do input multipart
             Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
@@ -104,11 +100,16 @@ public class DocumentSignatureResource {
 
             LOG.info("Arquivo lido com sucesso. Tamanho: " + pdfBytes.length + " bytes");
 
+            // Processar o documento e gerar o hash
+            byte[] documentHash = pdfService.getDocumentHash(pdfBytes);
+
+            LOG.info("Arquivo lido com sucesso. Tamanho: " + pdfBytes.length + " bytes");
+
 
 
 
             // Processar o documento
-            byte[] documentHash = pdfService.getDocumentHash(pdfBytes);
+
             String signature = rsaService.signDocument(documentHash);
             byte[] signedPdf = pdfService.addSignatureToDocument(pdfBytes, signature);
 
