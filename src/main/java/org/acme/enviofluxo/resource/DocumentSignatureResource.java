@@ -10,6 +10,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import org.acme.KafkaConfig.KafkaConfig;
 import org.acme.enviofluxo.dto.DadosBasicosDTO;
 import org.acme.enviofluxo.dto.DadosEnvioGeralDTO;
 import org.acme.enviofluxo.dto.EnvioDTO;
@@ -44,6 +45,9 @@ public class DocumentSignatureResource {
 
     @Inject
     DadosBasicosService dadosBasicosService;
+
+    @Inject
+    KafkaConfig kafkaConfig;
 
 
     @Inject
@@ -90,6 +94,7 @@ public class DocumentSignatureResource {
             }
 
             // Ler o conteúdo do arquivo
+
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] buffer = new byte[4096];
             int bytesRead;
@@ -97,38 +102,44 @@ public class DocumentSignatureResource {
                 baos.write(buffer, 0, bytesRead);
             }
             byte[] pdfBytes = baos.toByteArray();
-
             LOG.info("Arquivo lido com sucesso. Tamanho: " + pdfBytes.length + " bytes");
 
             // Processar o documento e gerar o hash
             byte[] documentHash = pdfService.getDocumentHash(pdfBytes);
+            LOG.info("Hash do documento gerado com sucesso.");
 
-            LOG.info("Arquivo lido com sucesso. Tamanho: " + pdfBytes.length + " bytes");
+            // Salvar o PDF em um diretório específico
+            String outputDirectory = "C:\\Users\\DELL\\OneDrive\\Documentos\\DocumentoDestino\\";
+            String outputFilePath = outputDirectory + "documento_extraido.pdf";
+
 
 
 
 
             // Processar o documento
 
-            String signature = rsaService.signDocument(documentHash);
-            byte[] signedPdf = pdfService.addSignatureToDocument(pdfBytes, signature);
+         //   String signature = rsaService.signDocument(documentHash);
+         //   byte[] signedPdf = pdfService.addSignatureToDocument(pdfBytes, signature);
 
-            try (FileOutputStream fos = new FileOutputStream(new File("C:\\Users\\DELL\\OneDrive\\Documentos\\documento_assinado.pdf"))) {
-                fos.write(signedPdf);
+            try (FileOutputStream fos = new FileOutputStream(new File(outputFilePath))) {
+                fos.write(pdfBytes);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.info("Arquivo PDF salvo com sucesso em: " + outputFilePath);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity(createErrorResponse("Error saving file"))
+                        .build();
             }
 
             // Registrar a assinatura na blockchain
-            String dataToStore = "Hash: " + Base64.getEncoder().encodeToString(documentHash) + ", Signature: " + signature;
-            blockchain.addBlock(dataToStore);
+          //  String dataToStore = "Hash: " + Base64.getEncoder().encodeToString(documentHash) + ", Signature: " + signature;
+          //  blockchain.addBlock(dataToStore);
 
 
             // Processar o payload JSONInputPart payloadPart = uploadForm.get("dadosbasicos").get(0);
          //   String payloadJson = payloadPart.getBodyAsString();
          //   ObjectMapper objectMapper = new ObjectMapper();
 
-            blockchain.addBlock(dataToStore);
+          //  blockchain.addBlock(dataToStore);
             List<InputPart> dadosenviogeralParts = uploadForm.get("dadosenviogeral");
 
 
@@ -171,9 +182,13 @@ public class DocumentSignatureResource {
             envioDTO.setDocumenthash(Arrays.toString(documentHash));
             envioDTO.setInteressado(interessado);
             envioDTO.setDadosBasicos(dadosBasicosGravar);
+            LOG.info("Arquivo PDF salvo com sucesso em: " + Arrays.toString(documentHash));
 
-
-
+            // Enviar dados para Kafka
+            String kafkaMessage = String.format("CPF: %s, Document Hash: %s",
+                    interessadobandoDTO.getCpf(),
+                    Arrays.toString(documentHash)); // Enviando o hash original como string
+                 kafkaConfig.sendMessage(  Arrays.toString(documentHash));
 
 
             envioService.InseerirEnvio(envioDTO);
@@ -182,8 +197,8 @@ public class DocumentSignatureResource {
 
             // Criar resposta
             SignatureResponse response = new SignatureResponse();
-            response.setSignature(signature);
-            response.setSignedPdf(Base64.getEncoder().encodeToString(signedPdf));
+          //  response.setSignature(signature);
+          //  response.setSignedPdf(Base64.getEncoder().encodeToString(signedPdf));
             response.setPublicKey(Base64.getEncoder().encodeToString(rsaService.getPublicKey().getEncoded()));
             response.setMessage(" Sua solicitação foi gerada, favor aguardar um email para fazer assinatura.");
 
