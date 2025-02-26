@@ -17,7 +17,9 @@ import org.acme.enviofluxo.dto.EnvioDTO;
 import org.acme.enviofluxo.dto.InteressadoDTO;
 import org.acme.enviofluxo.blockchainservice.Blockchain;
 import org.acme.enviofluxo.entity.DadosBasicos;
+import org.acme.enviofluxo.entity.EnvioFluxo;
 import org.acme.enviofluxo.entity.Interessado;
+import org.acme.enviofluxo.external.DTO.EnvioPandasDTO;
 import org.acme.enviofluxo.rsaassinarservice.PDFService;
 import org.acme.enviofluxo.rsaassinarservice.RSAService;
 import org.acme.enviofluxo.rsaassinarservice.SignatureResponse;
@@ -185,12 +187,16 @@ public class DocumentSignatureResource {
             LOG.info("Arquivo PDF salvo com sucesso em: " + Arrays.toString(documentHash));
 
             // Enviar dados para Kafka
-            String kafkaMessage = String.format("CPF: %s, Document Hash: %s",
-                    interessadobandoDTO.getCpf(),
-                    Arrays.toString(documentHash)); // Enviando o hash original como string
-                 kafkaConfig.sendMessage(  Arrays.toString(documentHash));
+          //  String kafkaMessage = String.format("CPF: %s, Document Hash: %s",
+          //          interessadobandoDTO.getCpf(),
+           //         Arrays.toString(documentHash)); // Enviando o hash original como string
+           //      kafkaConfig.sendMessage(  Arrays.toString(documentHash));
 
+            EnvioPandasDTO envioPandasDTO = new EnvioPandasDTO();
+              envioPandasDTO.setCpf(interessadobandoDTO.getCpf());
+              envioPandasDTO.setDocumentHash(Arrays.toString(documentHash));
 
+              kafkaConfig.sendMessage(envioPandasDTO);
             envioService.InseerirEnvio(envioDTO);
 
 
