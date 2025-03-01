@@ -1,10 +1,20 @@
 package org.acme.enviofluxo.dto;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.*;
 
-@AllArgsConstructor
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class DocumentoDTO {
+
+    private String  nomearquivo;
+
+
+    private byte[]  arquivopdf;
+
+
 }

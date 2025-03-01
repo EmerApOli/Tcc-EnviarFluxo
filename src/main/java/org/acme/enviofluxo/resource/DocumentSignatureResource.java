@@ -3,20 +3,15 @@ package org.acme.enviofluxo.resource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import org.acme.KafkaConfig.KafkaConfig;
-import org.acme.enviofluxo.dto.DadosBasicosDTO;
-import org.acme.enviofluxo.dto.DadosEnvioGeralDTO;
-import org.acme.enviofluxo.dto.EnvioDTO;
-import org.acme.enviofluxo.dto.InteressadoDTO;
+import org.acme.enviofluxo.dto.*;
 import org.acme.enviofluxo.blockchainservice.Blockchain;
 import org.acme.enviofluxo.entity.DadosBasicos;
+import org.acme.enviofluxo.entity.Documentos;
 import org.acme.enviofluxo.entity.EnvioFluxo;
 import org.acme.enviofluxo.entity.Interessado;
 import org.acme.enviofluxo.external.DTO.EnvioPandasDTO;
@@ -61,10 +56,11 @@ public class DocumentSignatureResource {
     @Inject
     EnvioService envioService;
 
+     @Inject
+     DocumentoService documentoService;
 
 
-    @Inject
-    private DocumentoService documentoService;
+
 
     @POST
     @Path("/sign")
@@ -116,6 +112,12 @@ public class DocumentSignatureResource {
 
 
 
+            // Criar um DocumentoDTO
+            DocumentoDTO documentoDTO = new DocumentoDTO();
+            documentoDTO.setNomearquivo("documento_extraido.pdf"); // ou qualquer nome apropriado
+            documentoDTO.setArquivopdf(pdfBytes);
+
+            Documentos documentSaved = documentoService.SalvarDocumento(documentoDTO);
 
 
             // Processar o documento
@@ -126,7 +128,7 @@ public class DocumentSignatureResource {
             try (FileOutputStream fos = new FileOutputStream(new File(outputFilePath))) {
                 fos.write(pdfBytes);
             } catch (IOException e) {
-                LOG.info("Arquivo PDF salvo com sucesso em: " + outputFilePath);
+                LOG.info("Arquivo PDF salvo com sucesso em: " +documentSaved);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                         .entity(createErrorResponse("Error saving file"))
                         .build();
@@ -156,13 +158,15 @@ public class DocumentSignatureResource {
      //      }
 
 
+            String idAleatorio = UUID.randomUUID().toString();
+
               InteressadoDTO  interessadobandoDTO = new InteressadoDTO();
 
             interessadobandoDTO.setCpf(dadosEnvioGeralDTO.getInteressadoDTO().getCpf());
             interessadobandoDTO.setNome(dadosEnvioGeralDTO.getInteressadoDTO().getNome());
             interessadobandoDTO.setDescricao(dadosEnvioGeralDTO.getInteressadoDTO().getDescricao());
             interessadobandoDTO.setCargo(dadosEnvioGeralDTO.getInteressadoDTO().getCargo());
-
+            interessadobandoDTO.setIdenviofluxo(idAleatorio);
             Interessado interessado =  interessadoService.SalvarInteressado(interessadobandoDTO);
             DadosBasicosDTO dadosBasicosDTO  = new DadosBasicosDTO();
 
@@ -170,7 +174,6 @@ public class DocumentSignatureResource {
             dadosBasicosDTO.setDescricao(dadosEnvioGeralDTO.getDadosBasicosDTO().getDescricao());
             dadosBasicosDTO.setStatus(dadosEnvioGeralDTO.getDadosBasicosDTO().getStatus());
             dadosBasicosDTO.setTipoassinatura(dadosEnvioGeralDTO.getDadosBasicosDTO().getTipoassinatura());
-
 
             DadosBasicos dadosBasicosGravar =  dadosBasicosService.create(dadosBasicosDTO);
 
@@ -184,6 +187,7 @@ public class DocumentSignatureResource {
             envioDTO.setDocumenthash(Arrays.toString(documentHash));
             envioDTO.setInteressado(interessado);
             envioDTO.setDadosBasicos(dadosBasicosGravar);
+            envioDTO.setIdfluxo(idAleatorio);
             LOG.info("Arquivo PDF salvo com sucesso em: " + Arrays.toString(documentHash));
 
             // Enviar dados para Kafka
@@ -193,11 +197,13 @@ public class DocumentSignatureResource {
            //      kafkaConfig.sendMessage(  Arrays.toString(documentHash));
 
             EnvioPandasDTO envioPandasDTO = new EnvioPandasDTO();
-              envioPandasDTO.setCpf(interessadobandoDTO.getCpf());
+              envioPandasDTO.setCpf(Long.valueOf(interessadobandoDTO.getCpf()));
               envioPandasDTO.setDocumentHash(Arrays.toString(documentHash));
-
+              interessadobandoDTO.setIdenviofluxo(envioDTO.getIdfluxo());
               kafkaConfig.sendMessage(envioPandasDTO);
             envioService.InseerirEnvio(envioDTO);
+
+
 
 
 
@@ -230,6 +236,47 @@ public class DocumentSignatureResource {
         SignatureResponse response = new SignatureResponse();
         response.setMessage("Error: " + message);
         return response;
+    }
+
+    @GET
+    @Path("/download/{id}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response downloadDocument(@PathParam("id") Long documentId) {
+        try {
+            // Recuperar o documento do banco de dados usando o id
+            Documentos document = documentoService.buscarId(documentId);
+
+            if (document == null || document.getArquivopdf() == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("File not found")
+                        .build();
+            }
+
+            byte[] pdfBytes = document.getArquivopdf(); // Obtendo o byte[]
+
+            // Retornar o byte[] como um InputStream
+            InputStream inputStream = new ByteArrayInputStream(pdfBytes);
+
+            // Retornar a resposta com o arquivo PDF
+            return Response.ok(inputStream)
+                    .header("Content-Disposition", "attachment; filename=\"documento_" + documentId + ".pdf\"")
+                    .build();
+        } catch (Exception e) {
+            LOG.error("Erro ao tentar baixar o arquivo", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error while downloading the file")
+                    .build();
+        }
+    }
+
+
+    @GET
+    @Path("/download/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+   public Documentos BuscarDocumentos (Long id ){
+
+        Documentos document = documentoService.buscarId(id);
+        return  document;
     }
 
 

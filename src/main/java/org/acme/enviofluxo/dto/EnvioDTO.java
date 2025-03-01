@@ -16,7 +16,7 @@ public class EnvioDTO {
 
     private  Long   id;
     private  String documenthash;
-
+    private  String idfluxo;
     private DadosBasicos dadosBasicos;
     private  Interessado interessado;
 

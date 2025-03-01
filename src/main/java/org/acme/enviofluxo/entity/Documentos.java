@@ -5,6 +5,8 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.*;
+import org.acme.enviofluxo.dto.DadosBasicosDTO;
+import org.acme.enviofluxo.dto.DocumentoDTO;
 
 import java.io.Serializable;
 
@@ -24,13 +26,17 @@ public class Documentos  extends PanacheEntityBase implements Serializable {
     @Column(name = "id")
     private  Long  id;
 
-    @JoinColumn(name = "tipo")
-    private String tipo;
-    @JoinColumn(name = "descricao")
-    private String descricao;
+    @JoinColumn(name = "nomearquivo")
+    private String  nomearquivo;
 
+    @JoinColumn(name = "arquivopdf")
+    private byte[]  arquivopdf;
 
+    public Documentos(DocumentoDTO documentoDTO){
+        this.arquivopdf = documentoDTO.getArquivopdf();
+        this.nomearquivo = documentoDTO.getNomearquivo();
 
+    }
 
     public static Interessado findByCpf(Long id) {
         return find("id", id).firstResult();

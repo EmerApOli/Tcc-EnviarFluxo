@@ -13,13 +13,15 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper=false)
 public class InteressadoDTO implements Serializable {
 
-    private  Long cpf;
+    private  String cpf;
 
     private  String nome;
 
     private  String descricao;
 
     private String  cargo;
+
+    private  String idenviofluxo;
 
 
 
@@ -30,6 +32,7 @@ public class InteressadoDTO implements Serializable {
         this.nome = interessado.getNome();
         this.descricao = interessado.getDescricao();
         this.cargo = interessado.getCargo();
+        this.idenviofluxo = interessado.getIdenviofluxo();
 
 
 

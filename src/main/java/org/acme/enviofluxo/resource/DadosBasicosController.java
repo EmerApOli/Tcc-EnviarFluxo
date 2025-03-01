@@ -69,7 +69,7 @@ public class DadosBasicosController {
         String message = String.format("Nome: %s, Descrição: %s, Status: %s, Tipo: %s",
                 dadosBasicos.getNome(),
                 dadosBasicos.getDescricao(),
-                dadosBasicos.getStatus(),
+              //  dadosBasicos.getStatus(),
                 dadosBasicos.getTipoassinatura());
 
         try {

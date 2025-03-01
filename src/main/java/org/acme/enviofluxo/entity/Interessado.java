@@ -26,15 +26,15 @@ public class Interessado extends PanacheEntityBase implements Serializable {
     @Column(name = "id")
    private  Long  id;
     @Column(name = "cpf")
-    private  Long cpf;
+    private  String cpf;
     @Column(name = "nome")
     private  String nome;
     @Column(name = "descricao")
     private  String descricao;
     @Column(name = "cargo")
     private String  cargo;
-    @Column(name = "idiniciofluxo")
-   private  Long idiniciofluxo;
+    @Column(name = "idenviofluxo")
+   private  String idenviofluxo;
 
 
     public  Interessado(InteressadoDTO interessadoDTO){
@@ -43,6 +43,7 @@ public class Interessado extends PanacheEntityBase implements Serializable {
         this.nome = interessadoDTO.getNome();
         this.descricao = interessadoDTO.getDescricao();
         this.cargo = interessadoDTO.getCargo();
+        this.idenviofluxo = interessadoDTO.getIdenviofluxo();
 
 
 

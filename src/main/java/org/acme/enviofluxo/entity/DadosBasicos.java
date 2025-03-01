@@ -32,8 +32,6 @@ public class DadosBasicos extends PanacheEntityBase implements Serializable {
     private  String nome;
     @JoinColumn(name = "descricao")
     private  String descricao;
-    @JoinColumn(name = "status")
-    private  String status;
     @JoinColumn(name = "tipoassinatura")
     private  String tipoassinatura;
 
@@ -44,7 +42,7 @@ public class DadosBasicos extends PanacheEntityBase implements Serializable {
 
         this.nome = dadosBasicosDTO.getNome();
         this.descricao = dadosBasicosDTO.getDescricao();
-        this.status = dadosBasicosDTO.getStatus();
+      //  this.status = dadosBasicosDTO.getStatus();
         this.tipoassinatura = dadosBasicosDTO.getTipoassinatura();
 
     }
