@@ -21,12 +21,13 @@ public class Interessado extends PanacheEntityBase implements Serializable {
 
     private  static  final Long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-   private  Long  id;
-    @Column(name = "cpf")
-    private  String cpf;
+
+ //   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  //  @Column(name = "id")
+  //  private  Long  id;
+    @Id // Define 'cpf' como chave primária
+    @Column(name = "cpf", unique = true, nullable = false)
+     private  String cpf;
     @Column(name = "nome")
     private  String nome;
     @Column(name = "descricao")
@@ -36,6 +37,10 @@ public class Interessado extends PanacheEntityBase implements Serializable {
     @Column(name = "idenviofluxo")
    private  String idenviofluxo;
 
+    @ManyToOne
+    @JoinColumn(name = "id_documento", nullable = false)
+    private Documentos  documento;
+
 
     public  Interessado(InteressadoDTO interessadoDTO){
 
@@ -44,6 +49,8 @@ public class Interessado extends PanacheEntityBase implements Serializable {
         this.descricao = interessadoDTO.getDescricao();
         this.cargo = interessadoDTO.getCargo();
         this.idenviofluxo = interessadoDTO.getIdenviofluxo();
+        this.documento  = interessadoDTO.getDocumentos();
+
 
 
 

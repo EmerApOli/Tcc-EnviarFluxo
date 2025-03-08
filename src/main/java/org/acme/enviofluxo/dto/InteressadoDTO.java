@@ -3,6 +3,7 @@ package org.acme.enviofluxo.dto;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.acme.enviofluxo.entity.Documentos;
 import org.acme.enviofluxo.entity.Interessado;
 
 import java.io.Serializable;
@@ -23,6 +24,8 @@ public class InteressadoDTO implements Serializable {
 
     private  String idenviofluxo;
 
+    private Documentos documentos;
+
 
 
 
@@ -33,6 +36,8 @@ public class InteressadoDTO implements Serializable {
         this.descricao = interessado.getDescricao();
         this.cargo = interessado.getCargo();
         this.idenviofluxo = interessado.getIdenviofluxo();
+        this.documentos = interessado.getDocumento();
+
 
 
 

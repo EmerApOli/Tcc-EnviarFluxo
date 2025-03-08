@@ -167,7 +167,9 @@ public class DocumentSignatureResource {
             interessadobandoDTO.setDescricao(dadosEnvioGeralDTO.getInteressadoDTO().getDescricao());
             interessadobandoDTO.setCargo(dadosEnvioGeralDTO.getInteressadoDTO().getCargo());
             interessadobandoDTO.setIdenviofluxo(idAleatorio);
+            interessadobandoDTO.setDocumentos(documentSaved);
             Interessado interessado =  interessadoService.SalvarInteressado(interessadobandoDTO);
+
             DadosBasicosDTO dadosBasicosDTO  = new DadosBasicosDTO();
 
             dadosBasicosDTO.setNome(dadosEnvioGeralDTO.getDadosBasicosDTO().getNome());
@@ -188,6 +190,7 @@ public class DocumentSignatureResource {
             envioDTO.setInteressado(interessado);
             envioDTO.setDadosBasicos(dadosBasicosGravar);
             envioDTO.setIdfluxo(idAleatorio);
+
             LOG.info("Arquivo PDF salvo com sucesso em: " + Arrays.toString(documentHash));
 
             // Enviar dados para Kafka
