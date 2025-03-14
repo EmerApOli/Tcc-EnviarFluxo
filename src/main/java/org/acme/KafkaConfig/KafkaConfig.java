@@ -19,5 +19,6 @@ public class KafkaConfig {
     public void sendMessage(EnvioPandasDTO envioDTO) {
         String message = gson.toJson(envioDTO); // Converte o objeto em JSON
         dadosBasicosEmitter.send(message); // Envia a mensagem JSON
+      System.out.print(message);
     }
 }
