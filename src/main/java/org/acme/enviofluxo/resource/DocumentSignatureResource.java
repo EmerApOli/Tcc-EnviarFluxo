@@ -202,6 +202,7 @@ public class DocumentSignatureResource {
             EnvioPandasDTO envioPandasDTO = new EnvioPandasDTO();
               envioPandasDTO.setCpf(Long.valueOf(interessadobandoDTO.getCpf()));
               envioPandasDTO.setDocumentHash(Arrays.toString(documentHash));
+              envioPandasDTO.setArquivopdf(documentSaved.getArquivopdf());
               interessadobandoDTO.setIdenviofluxo(envioDTO.getIdfluxo());
               kafkaConfig.sendMessage(envioPandasDTO);
             envioService.InseerirEnvio(envioDTO);

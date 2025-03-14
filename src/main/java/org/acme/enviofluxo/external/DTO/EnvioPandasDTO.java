@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class EnvioPandasDTO {
     private Long cpf;
     private String documentHash;
-
+    private byte[]  arquivopdf;
 
 }
