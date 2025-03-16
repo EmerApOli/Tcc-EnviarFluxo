@@ -35,6 +35,9 @@ public class EnvioFluxo extends PanacheEntityBase implements Serializable {
     @JoinColumn(name = "interessado_cpf", nullable = false)
     private  Interessado interessado;
 
+    @Column(name = "status")
+    private  String status;
+
 
 
     @ManyToOne
@@ -48,6 +51,7 @@ public class EnvioFluxo extends PanacheEntityBase implements Serializable {
         this.interessado = envioDTO.getInteressado();
         this.dadosBasicos= envioDTO.getDadosBasicos();
         this.idfluxo  = envioDTO.getIdfluxo();
+        this.status = envioDTO.getStatus();
 
     }
 

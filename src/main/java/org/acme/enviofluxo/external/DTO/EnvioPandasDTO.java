@@ -14,5 +14,6 @@ public class EnvioPandasDTO {
     private Long cpf;
     private String documentHash;
     private byte[]  arquivopdf;
-
+    private String idFluxo;
+    private  String status;
 }

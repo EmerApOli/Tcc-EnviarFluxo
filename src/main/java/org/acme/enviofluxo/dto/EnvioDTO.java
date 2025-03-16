@@ -19,6 +19,7 @@ public class EnvioDTO {
     private  String idfluxo;
     private DadosBasicos dadosBasicos;
     private  Interessado interessado;
+    private  String status;
 
 
     public  EnvioDTO( ){

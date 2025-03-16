@@ -56,10 +56,8 @@ public class DocumentSignatureResource {
     @Inject
     EnvioService envioService;
 
-     @Inject
-     DocumentoService documentoService;
-
-
+    @Inject
+    DocumentoService documentoService;
 
 
     @POST
@@ -107,13 +105,6 @@ public class DocumentSignatureResource {
             LOG.info("Hash do documento gerado com sucesso.");
 
 
-
-
-
-
-
-
-
             // Criar um DocumentoDTO
             DocumentoDTO documentoDTO = new DocumentoDTO();
             documentoDTO.setNomearquivo("documento_extraido.pdf"); // ou qualquer nome apropriado
@@ -124,38 +115,35 @@ public class DocumentSignatureResource {
 
             // Processar o documento
 
-         //   String signature = rsaService.signDocument(documentHash);
-         //   byte[] signedPdf = pdfService.addSignatureToDocument(pdfBytes, signature);
-
+            //   String signature = rsaService.signDocument(documentHash);
+            //   byte[] signedPdf = pdfService.addSignatureToDocument(pdfBytes, signature);
 
 
             // Registrar a assinatura na blockchain
-          //  String dataToStore = "Hash: " + Base64.getEncoder().encodeToString(documentHash) + ", Signature: " + signature;
-          //  blockchain.addBlock(dataToStore);
+            //  String dataToStore = "Hash: " + Base64.getEncoder().encodeToString(documentHash) + ", Signature: " + signature;
+            //  blockchain.addBlock(dataToStore);
 
 
             // Processar o payload JSONInputPart payloadPart = uploadForm.get("dadosbasicos").get(0);
-         //   String payloadJson = payloadPart.getBodyAsString();
-         //   ObjectMapper objectMapper = new ObjectMapper();
+            //   String payloadJson = payloadPart.getBodyAsString();
+            //   ObjectMapper objectMapper = new ObjectMapper();
 
-          //  blockchain.addBlock(dataToStore);
+            //  blockchain.addBlock(dataToStore);
             List<InputPart> dadosenviogeralParts = uploadForm.get("dadosenviogeral");
 
 
+            //   if (interessadosParts != null && !interessadosParts.isEmpty()) {
+            InputPart dadosenviogeralPart = dadosenviogeralParts.get(0);
+            String interessadosJson = dadosenviogeralPart.getBodyAsString();
 
-
-        //   if (interessadosParts != null && !interessadosParts.isEmpty()) {
-               InputPart dadosenviogeralPart = dadosenviogeralParts.get(0);
-               String interessadosJson = dadosenviogeralPart.getBodyAsString();
-
-              ObjectMapper objectMapper = new ObjectMapper();
-              DadosEnvioGeralDTO  dadosEnvioGeralDTO = objectMapper.readValue(interessadosJson, DadosEnvioGeralDTO.class);
-     //      }
+            ObjectMapper objectMapper = new ObjectMapper();
+            DadosEnvioGeralDTO dadosEnvioGeralDTO = objectMapper.readValue(interessadosJson, DadosEnvioGeralDTO.class);
+            //      }
 
 
             String idAleatorio = UUID.randomUUID().toString();
 
-              InteressadoDTO  interessadobandoDTO = new InteressadoDTO();
+            InteressadoDTO interessadobandoDTO = new InteressadoDTO();
 
             interessadobandoDTO.setCpf(dadosEnvioGeralDTO.getInteressadoDTO().getCpf());
             interessadobandoDTO.setNome(dadosEnvioGeralDTO.getInteressadoDTO().getNome());
@@ -163,82 +151,75 @@ public class DocumentSignatureResource {
             interessadobandoDTO.setCargo(dadosEnvioGeralDTO.getInteressadoDTO().getCargo());
             interessadobandoDTO.setIdenviofluxo(idAleatorio);
             interessadobandoDTO.setDocumentos(documentSaved);
-            Interessado interessado =  interessadoService.SalvarInteressado(interessadobandoDTO);
+            Interessado interessado = interessadoService.SalvarInteressado(interessadobandoDTO);
 
-            DadosBasicosDTO dadosBasicosDTO  = new DadosBasicosDTO();
+            DadosBasicosDTO dadosBasicosDTO = new DadosBasicosDTO();
 
             dadosBasicosDTO.setNome(dadosEnvioGeralDTO.getDadosBasicosDTO().getNome());
             dadosBasicosDTO.setDescricao(dadosEnvioGeralDTO.getDadosBasicosDTO().getDescricao());
             dadosBasicosDTO.setStatus(dadosEnvioGeralDTO.getDadosBasicosDTO().getStatus());
             dadosBasicosDTO.setTipoassinatura(dadosEnvioGeralDTO.getDadosBasicosDTO().getTipoassinatura());
 
-            DadosBasicos dadosBasicosGravar =  dadosBasicosService.create(dadosBasicosDTO);
+            DadosBasicos dadosBasicosGravar = dadosBasicosService.create(dadosBasicosDTO);
 
 
+            //  Interessado interessado = interessadoService.buscarPorCpf(interessadoDTO.getCpf());
 
-
-          //  Interessado interessado = interessadoService.buscarPorCpf(interessadoDTO.getCpf());
-
-            EnvioDTO envioDTO =  new EnvioDTO();
+            EnvioDTO envioDTO = new EnvioDTO();
 
             envioDTO.setDocumenthash(Arrays.toString(documentHash));
             envioDTO.setInteressado(interessado);
             envioDTO.setDadosBasicos(dadosBasicosGravar);
             envioDTO.setIdfluxo(idAleatorio);
+            envioDTO.setStatus("iniciado");
 
             LOG.info("Arquivo PDF salvo com sucesso em: " + Arrays.toString(documentHash));
 
             // Enviar dados para Kafka
-          //  String kafkaMessage = String.format("CPF: %s, Document Hash: %s",
-          //          interessadobandoDTO.getCpf(),
-           //         Arrays.toString(documentHash)); // Enviando o hash original como string
-           //      kafkaConfig.sendMessage(  Arrays.toString(documentHash));
+            //  String kafkaMessage = String.format("CPF: %s, Document Hash: %s",
+            //          interessadobandoDTO.getCpf(),
+            //         Arrays.toString(documentHash)); // Enviando o hash original como string
+            //      kafkaConfig.sendMessage(  Arrays.toString(documentHash));
 
             EnvioPandasDTO envioPandasDTO = new EnvioPandasDTO();
-              envioPandasDTO.setCpf(Long.valueOf(interessadobandoDTO.getCpf()));
-              envioPandasDTO.setDocumentHash(Arrays.toString(documentHash));
-              envioPandasDTO.setArquivopdf(documentSaved.getArquivopdf());
-              interessadobandoDTO.setIdenviofluxo(envioDTO.getIdfluxo());
-              kafkaConfig.sendMessage(envioPandasDTO);
+            envioPandasDTO.setCpf(Long.valueOf(interessadobandoDTO.getCpf()));
+            envioPandasDTO.setIdFluxo(envioDTO.getIdfluxo());
+            envioPandasDTO.setStatus(envioDTO.getStatus());
+            kafkaConfig.sendMessage(envioPandasDTO);
             envioService.InseerirEnvio(envioDTO);
 
             String outputDirectory = "/app/pdfs/"; // Diretório dentro do contêiner do Nginx
-            String outputFilePath = outputDirectory +  interessado.getCpf() + ".pdf";
+            String outputFilePath = outputDirectory + interessado.getCpf() + ".pdf";
 
             try (FileOutputStream fos = new FileOutputStream(new File(outputFilePath))) {
                 fos.write(pdfBytes);
             } catch (IOException e) {
-                LOG.info("Arquivo PDF salvo com sucesso em: " +documentSaved);
+                LOG.info("Arquivo PDF salvo com sucesso em: " + documentSaved);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                         .entity(createErrorResponse("Error saving file"))
                         .build();
             }
 
 
-
             try (FileOutputStream fos = new FileOutputStream(new File(outputFilePath))) {
                 fos.write(pdfBytes);
             } catch (IOException e) {
-                LOG.info("Arquivo PDF salvo com sucesso em: " + outputDirectory );
+                LOG.info("Arquivo PDF salvo com sucesso em: " + outputDirectory);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                         .entity(createErrorResponse("Error saving file"))
                         .build();
             }
-
-
-
 
 
             // Criar resposta
             SignatureResponse response = new SignatureResponse();
-          //  response.setSignature(signature);
-          //  response.setSignedPdf(Base64.getEncoder().encodeToString(signedPdf));
+            //  response.setSignature(signature);
+            //  response.setSignedPdf(Base64.getEncoder().encodeToString(signedPdf));
             response.setPublicKey(Base64.getEncoder().encodeToString(rsaService.getPublicKey().getEncoded()));
-            response.setMessage(" Sua solicitação foi gerada, favor aguardar um email para fazer assinatura.");
+            response.setMessage(" Sua solicitação foi gerada, favor aguardar um email para fazer assinatura :" + envioDTO.getStatus());
 
 
             // to-do fazer a inserção na base
-
 
 
             return Response.ok(response.getMessage()).build();
@@ -295,10 +276,10 @@ public class DocumentSignatureResource {
     @GET
     @Path("/download/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-   public Documentos BuscarDocumentos (Long id ){
+    public Documentos BuscarDocumentos(Long id) {
 
         Documentos document = documentoService.buscarId(id);
-        return  document;
+        return document;
     }
 
 
