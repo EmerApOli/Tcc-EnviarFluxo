@@ -106,9 +106,11 @@ public class DocumentSignatureResource {
             byte[] documentHash = pdfService.getDocumentHash(pdfBytes);
             LOG.info("Hash do documento gerado com sucesso.");
 
-            // Salvar o PDF em um diretório específico
-            String outputDirectory = "C:\\Users\\DELL\\OneDrive\\Documentos\\DocumentoDestino\\";
-            String outputFilePath = outputDirectory + "documento_extraido.pdf";
+
+
+
+
+
 
 
 
@@ -125,14 +127,7 @@ public class DocumentSignatureResource {
          //   String signature = rsaService.signDocument(documentHash);
          //   byte[] signedPdf = pdfService.addSignatureToDocument(pdfBytes, signature);
 
-            try (FileOutputStream fos = new FileOutputStream(new File(outputFilePath))) {
-                fos.write(pdfBytes);
-            } catch (IOException e) {
-                LOG.info("Arquivo PDF salvo com sucesso em: " +documentSaved);
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity(createErrorResponse("Error saving file"))
-                        .build();
-            }
+
 
             // Registrar a assinatura na blockchain
           //  String dataToStore = "Hash: " + Base64.getEncoder().encodeToString(documentHash) + ", Signature: " + signature;
@@ -206,6 +201,29 @@ public class DocumentSignatureResource {
               interessadobandoDTO.setIdenviofluxo(envioDTO.getIdfluxo());
               kafkaConfig.sendMessage(envioPandasDTO);
             envioService.InseerirEnvio(envioDTO);
+
+            String outputDirectory = "/app/pdfs/"; // Diretório dentro do contêiner do Nginx
+            String outputFilePath = outputDirectory +  interessado.getCpf() + ".pdf";
+
+            try (FileOutputStream fos = new FileOutputStream(new File(outputFilePath))) {
+                fos.write(pdfBytes);
+            } catch (IOException e) {
+                LOG.info("Arquivo PDF salvo com sucesso em: " +documentSaved);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity(createErrorResponse("Error saving file"))
+                        .build();
+            }
+
+
+
+            try (FileOutputStream fos = new FileOutputStream(new File(outputFilePath))) {
+                fos.write(pdfBytes);
+            } catch (IOException e) {
+                LOG.info("Arquivo PDF salvo com sucesso em: " + outputDirectory );
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity(createErrorResponse("Error saving file"))
+                        .build();
+            }
 
 
 
