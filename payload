@@ -1,0 +1,15 @@
+{
+  "dadosBasicosDTO": {
+    "nome": "Emerson",
+    "descricao": "Funcionario PJ",
+    "status": "ativo",
+    "tipoassinatura": "Dpcumento Imobilliario"
+  },
+  "interessadoDTO": {
+    "cpf": "24656666666",
+    "nome": "Carlos Adão",
+    "descricao": "empregado",
+    "cargo": "Analista TI"
+  }
+
+}
