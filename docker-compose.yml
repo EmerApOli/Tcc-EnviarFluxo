@@ -1,0 +1,152 @@
+version: '3.8'  # Versão do Docker Compose
+
+services:
+  enviarfluxo-db:
+    image: mongo:latest
+    container_name: order-db
+    restart: always
+    networks:
+      - orchestrator-saga
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=123456
+    ports:
+      - "27017:27017"
+
+  assinar-db:
+    container_name: assinar-db
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: assinar-db
+      POSTGRES_HOST: assinar-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
+    networks:
+      - orchestrator-saga
+    ports:
+      - "5432:5432"
+
+  enviar-db:
+    container_name: enviar-db
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: enviar-db
+      POSTGRES_HOST: enviar-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
+    networks:
+      - orchestrator-saga
+    ports:
+      - "5433:5432"
+
+  kafka:
+    container_name: kafka
+    image: obsidiandynamics/kafka
+    restart: "no"
+    ports:
+      - "2181:2181"
+      - "9092:9092"
+    networks:
+      - orchestrator-saga
+    environment:
+      KAFKA_LISTENERS: "INTERNAL://:29092,EXTERNAL://:9092"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:29092,EXTERNAL://localhost:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT: "6000"
+      KAFKA_RESTART_ATTEMPTS: "10"
+      KAFKA_RESTART_DELAY: "5"
+      ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
+    volumes:
+      - ./data/kafka/data:/var/lib/kafka/data
+
+
+
+
+
+  redpanda-console:
+    container_name: redpanda
+    image: redpandadata/console
+    restart: on-failure
+    entrypoint: /bin/sh
+    command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
+    ports:
+      - "8081:8080"
+    networks:
+      - orchestrator-saga
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["kafka:29092"]
+    depends_on:
+      - kafka
+
+  assinador:
+    container_name: assinadorservice
+    image: assinador:latest
+    networks:
+      - orchestrator-saga
+    depends_on:
+      - enviar-db
+      - kafka
+    environment:
+      KAFKA_BROKER: kafka:29092
+      POSTGRES_DB: enviar-db
+      POSTGRES_HOST: enviar-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "8074:8074"
+    volumes:
+      - ./data/assinados:/app/pdfs/assinados
+      - ./data/pdfs:/app/pdfs
+  orchestrator-service:
+    container_name: orchestrator-service
+    image: orchestrator-service:latest
+    networks:
+      - orchestrator-saga
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BROKER: kafka:29092
+    ports:
+      - "8078:8078"
+
+  enviarfluxo:
+    container_name: enviarfluxo
+    image: enviar-fluxo:latest
+    networks:
+      - orchestrator-saga
+    volumes:
+      - ./data/pdfs:/app/pdfs
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BROKER: kafka:29092
+      POSTGRES_DB: enviar-db
+      POSTGRES_HOST: enviar-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "8075:8075"
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    networks:
+      - orchestrator-saga
+    volumes:
+      - ./data/pdfs:/app/pdfs      # Mapeia o diretório de PDFs
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      # Arquivo de configuração do Nginx
+    ports:
+      - "8085:80"
+
+
+
+networks:
+  orchestrator-saga:
+    driver: bridge
