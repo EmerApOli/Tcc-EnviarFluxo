@@ -6,17 +6,16 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
-        <compiler-plugin.version>3.13.0</compiler-plugin.version>
-        <maven.compiler.release>17</maven.compiler.release>
+        <compiler-plugin.version>3.14.0</compiler-plugin.version> <!-- Atualizado para uma versão mais recente -->
+        <maven.compiler.release>21</maven.compiler.release> <!-- Atualizado para Java 21 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.17.6</quarkus.platform.version>
+        <quarkus.platform.version>3.17.6</quarkus.platform.version> <!-- Verifique se há uma versão mais recente -->
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.0</surefire-plugin.version>
     </properties>
-
 
     <dependencyManagement>
         <dependencies>
@@ -30,150 +29,91 @@
         </dependencies>
     </dependencyManagement>
 
-
-
-
-
-        <dependencies>
-
-
-
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-messaging-kafka</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-arc</artifactId>
-            </dependency>
-
-
-            <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-hibernate-orm-panache -->
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-hibernate-orm-panache</artifactId>
-                <version>3.17.5</version>
-            </dependency>
-
-
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-jdbc-postgresql</artifactId>
-            </dependency>
-
-            <!-- Quarkus Hibernate ORM para suporte a JPA -->
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-hibernate-orm</artifactId>
-            </dependency>
-
-
-            <!-- https://mvnrepository.com/artifact/jakarta.transaction/jakarta.transaction-api -->
-            <dependency>
-                <groupId>jakarta.transaction</groupId>
-                <artifactId>jakarta.transaction-api</artifactId>
-                <version>2.0.0</version>
-            </dependency>
-
-
-            <!-- PDF Box -->
-            <dependency>
-                <groupId>org.apache.pdfbox</groupId>
-                <artifactId>pdfbox</artifactId>
-                <version>2.0.29</version>
-            </dependency>
-
-
-            <!-- Core RESTEasy -->
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-resteasy</artifactId>
-                <version>${quarkus.platform.version}</version>
-            </dependency>
-
-            <!-- JSON Support -->
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-resteasy-jackson</artifactId>
-                <version>${quarkus.platform.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-resteasy-multipart</artifactId>
-            </dependency>
-
-
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-multipart-provider</artifactId>
-                <version>6.2.4.Final</version>
-            </dependency>
-
-            <!-- Quarkus Hibernate ORM para suporte a JPA -->
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-hibernate-orm</artifactId>
-            </dependency>
-
-            <!-- Quarkus JPA para usar o Hibernate com JPA -->
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-jdbc-h2</artifactId> <!-- Ou outro driver de banco de dados que você estiver usando -->
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-hibernate-orm-panache -->
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-hibernate-orm-panache</artifactId>
-                <version>3.17.5</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-jdbc-postgresql -->
-
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-jdbc-postgresql</artifactId>
-            </dependency>
-
-
-
-            <!-- Lombok para usar @Data, @AllArgsConstructor, @NoArgsConstructor, @Builder -->
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>1.18.24</version> <!-- Use a versão mais recente do Lombok -->
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- Jackson para serialização/deserialização JSON -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-            </dependency>
-
-
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-junit5</artifactId>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.rest-assured</groupId>
-                <artifactId>rest-assured</artifactId>
-                <scope>test</scope>
-            </dependency>
-
-
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>2.8.9</version> <!-- Verifique por versões mais recentes -->
-            </dependency>
-
-
-
-        </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-messaging-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-orm-panache</artifactId>
+            <version>3.17.5</version> <!-- Verifique por versões mais recentes -->
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-orm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.29</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy</artifactId>
+            <version>${quarkus.platform.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-jackson</artifactId>
+            <version>${quarkus.platform.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-multipart</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-multipart-provider</artifactId>
+            <version>6.2.4.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-orm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.9</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
