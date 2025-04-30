@@ -9,6 +9,7 @@ import lombok.*;
 import org.acme.enviofluxo.dto.EnvioDTO;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -31,14 +32,9 @@ public class EnvioFluxo extends PanacheEntityBase implements Serializable {
      @Column(name = "documenthash")
     private  String documenthash;
 
-    @ManyToOne
-    @JoinColumn(name = "interessado_cpf", nullable = false)
-    private  Interessado interessado;
 
     @Column(name = "status")
     private  String status;
-
-
 
     @ManyToOne
     @JoinColumn(name = "id_dadosbasicos", nullable = false)
@@ -46,9 +42,13 @@ public class EnvioFluxo extends PanacheEntityBase implements Serializable {
 
 
 
+    @OneToMany(mappedBy = "enviofluxo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemEnvioFluxo> items;
+
+
     public  EnvioFluxo(EnvioDTO envioDTO){
         this.documenthash =  envioDTO.getDocumenthash();
-        this.interessado = envioDTO.getInteressado();
+       // this.interessado = envioDTO.getInteressado();
         this.dadosBasicos= envioDTO.getDadosBasicos();
         this.idfluxo  = envioDTO.getIdfluxo();
         this.status = envioDTO.getStatus();

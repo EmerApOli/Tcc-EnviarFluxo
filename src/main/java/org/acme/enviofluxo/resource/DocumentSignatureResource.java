@@ -168,7 +168,7 @@ public class DocumentSignatureResource {
             EnvioDTO envioDTO = new EnvioDTO();
 
             envioDTO.setDocumenthash(Arrays.toString(documentHash));
-            envioDTO.setInteressado(interessado);
+        //    envioDTO.setInteressado(interessado);
             envioDTO.setDadosBasicos(dadosBasicosGravar);
             envioDTO.setIdfluxo(idAleatorio);
             envioDTO.setStatus("iniciado");

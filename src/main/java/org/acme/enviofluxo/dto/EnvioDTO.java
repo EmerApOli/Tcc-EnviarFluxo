@@ -8,6 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.acme.enviofluxo.entity.DadosBasicos;
 import org.acme.enviofluxo.entity.Interessado;
+import org.acme.enviofluxo.entity.ItemEnvioFluxo;
+
+import java.util.List;
 
 @AllArgsConstructor
 //@NoArgsConstructor
@@ -18,7 +21,7 @@ public class EnvioDTO {
     private  String documenthash;
     private  String idfluxo;
     private DadosBasicos dadosBasicos;
-    private  Interessado interessado;
+  //  private List<ItemEnvioFluxo> interessado;
     private  String status;
 
 
