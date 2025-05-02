@@ -16,10 +16,10 @@ public class InteressadoService {
 InteressadoRepository interessadoRepository;
 
   @Transactional
-     public  Interessado  SalvarInteressado(InteressadoDTO interessadoDTO){
+     public  Interessado  SalvarInteressado(Interessado interessado){
 
          try {
-             Interessado interessado = new Interessado(interessadoDTO);
+            // Interessado interessado = new Interessado(interessadoDTO);
              interessado.persist();
 
              return interessado;

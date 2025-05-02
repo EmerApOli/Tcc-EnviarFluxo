@@ -1,5 +1,6 @@
 package org.acme.enviofluxo.entity;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @Entity
 @EqualsAndHashCode(callSuper=false)
 
-public  class ItemEnvioFluxo {
+public  class ItemEnvioFluxo  extends PanacheEntityBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -27,8 +28,13 @@ public  class ItemEnvioFluxo {
      private Interessado interessado;
 
 
-   ;
 
+
+    public ItemEnvioFluxo(EnvioFluxo enviofluxo, Interessado interessado) {
+        this.enviofluxo = enviofluxo;
+        this.interessado = interessado;
+        // Inicializar outros atributos, se necessário
+    }
 
 
 }

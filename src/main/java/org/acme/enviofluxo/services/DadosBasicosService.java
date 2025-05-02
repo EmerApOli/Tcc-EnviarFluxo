@@ -14,10 +14,10 @@ public class DadosBasicosService {
 
 
     @Transactional
-    public DadosBasicos create(DadosBasicosDTO dadosBasicosDTO) throws Exception {
+    public DadosBasicos create(DadosBasicos dadosBasicos) throws Exception {
 
         try {
-            DadosBasicos dadosBasicos = new DadosBasicos(dadosBasicosDTO);
+           // DadosBasicos dadosBasicos = new DadosBasicos(new DadosBasicosDTO());
             dadosBasicos.persist();
 
            return  dadosBasicos;

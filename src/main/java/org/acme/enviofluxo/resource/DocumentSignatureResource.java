@@ -5,6 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
 import org.acme.KafkaConfig.KafkaConfig;
@@ -64,176 +65,54 @@ public class DocumentSignatureResource {
     @Path("/sign")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response signDocument(MultipartFormDataInput input) {
+    public Response signDocument(MultipartFormDataInput input) throws Exception {
         try {
-            LOG.info("Iniciando processo de armazenamento do documento");
-
             // Obter o arquivo do input multipart
             Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
-            List<InputPart> inputParts = uploadForm.get("file");
+            List<InputPart> fileParts = uploadForm.get("file");
+            List<InputPart> dadosEnvioGeralParts = uploadForm.get("dadosenviogeral");
 
-            if (inputParts == null || inputParts.isEmpty()) {
-                LOG.error("Nenhum arquivo encontrado no request");
+            if (fileParts == null || fileParts.isEmpty() || dadosEnvioGeralParts == null || dadosEnvioGeralParts.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(createErrorResponse("No file found in request"))
+                        .entity(createErrorResponse("No file or data found in request"))
                         .build();
             }
 
-            InputPart inputPart = inputParts.get(0);
+            // Ler o arquivo
+            InputPart inputPart = fileParts.get(0);
             InputStream inputStream = inputPart.getBody(InputStream.class, null);
-
-            if (inputStream == null) {
-                LOG.error("InputStream é nulo");
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(createErrorResponse("Failed to read file"))
-                        .build();
-            }
-
-            // Ler o conteúdo do arquivo
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                baos.write(buffer, 0, bytesRead);
-            }
-            byte[] pdfBytes = baos.toByteArray();
-            LOG.info("Arquivo lido com sucesso. Tamanho: " + pdfBytes.length + " bytes");
+            byte[] pdfBytes = inputStream.readAllBytes(); // Lê todos os bytes do InputStream
 
             // Processar o documento e gerar o hash
             byte[] documentHash = pdfService.getDocumentHash(pdfBytes);
-            LOG.info("Hash do documento gerado com sucesso.");
+            Documentos documentSaved = documentoService.SalvarDocumento(new DocumentoDTO("documento_extraido.pdf", pdfBytes));
 
-
-            // Criar um DocumentoDTO
-            DocumentoDTO documentoDTO = new DocumentoDTO();
-            documentoDTO.setNomearquivo("documento_extraido.pdf"); // ou qualquer nome apropriado
-            documentoDTO.setArquivopdf(pdfBytes);
-
-            Documentos documentSaved = documentoService.SalvarDocumento(documentoDTO);
-
-
-            // Processar o documento
-
-            //   String signature = rsaService.signDocument(documentHash);
-            //   byte[] signedPdf = pdfService.addSignatureToDocument(pdfBytes, signature);
-
-
-            // Registrar a assinatura na blockchain
-            //  String dataToStore = "Hash: " + Base64.getEncoder().encodeToString(documentHash) + ", Signature: " + signature;
-            //  blockchain.addBlock(dataToStore);
-
-
-            // Processar o payload JSONInputPart payloadPart = uploadForm.get("dadosbasicos").get(0);
-            //   String payloadJson = payloadPart.getBodyAsString();
-            //   ObjectMapper objectMapper = new ObjectMapper();
-
-            //  blockchain.addBlock(dataToStore);
-            List<InputPart> dadosenviogeralParts = uploadForm.get("dadosenviogeral");
-
-
-            //   if (interessadosParts != null && !interessadosParts.isEmpty()) {
-            InputPart dadosenviogeralPart = dadosenviogeralParts.get(0);
-            String interessadosJson = dadosenviogeralPart.getBodyAsString();
+            // Processar o payload JSON
+            InputPart dadosEnvioGeralPart = dadosEnvioGeralParts.get(0);
+            String jsonPayload = dadosEnvioGeralPart.getBodyAsString();
 
             ObjectMapper objectMapper = new ObjectMapper();
-            DadosEnvioGeralDTO dadosEnvioGeralDTO = objectMapper.readValue(interessadosJson, DadosEnvioGeralDTO.class);
-            //      }
-
+            EnvioDTO envioDTO = objectMapper.readValue(jsonPayload, EnvioDTO.class);
 
             String idAleatorio = UUID.randomUUID().toString();
 
-            InteressadoDTO interessadobandoDTO = new InteressadoDTO();
-
-            interessadobandoDTO.setCpf(dadosEnvioGeralDTO.getInteressadoDTO().getCpf());
-            interessadobandoDTO.setNome(dadosEnvioGeralDTO.getInteressadoDTO().getNome());
-            interessadobandoDTO.setDescricao(dadosEnvioGeralDTO.getInteressadoDTO().getDescricao());
-            interessadobandoDTO.setCargo(dadosEnvioGeralDTO.getInteressadoDTO().getCargo());
-            interessadobandoDTO.setIdenviofluxo(idAleatorio);
-            interessadobandoDTO.setDocumentos(documentSaved);
-            Interessado interessado = interessadoService.SalvarInteressado(interessadobandoDTO);
-
-            DadosBasicosDTO dadosBasicosDTO = new DadosBasicosDTO();
-
-            dadosBasicosDTO.setNome(dadosEnvioGeralDTO.getDadosBasicosDTO().getNome());
-            dadosBasicosDTO.setDescricao(dadosEnvioGeralDTO.getDadosBasicosDTO().getDescricao());
-            dadosBasicosDTO.setStatus(dadosEnvioGeralDTO.getDadosBasicosDTO().getStatus());
-            dadosBasicosDTO.setTipoassinatura(dadosEnvioGeralDTO.getDadosBasicosDTO().getTipoassinatura());
-
-            DadosBasicos dadosBasicosGravar = dadosBasicosService.create(dadosBasicosDTO);
-
-
-            //  Interessado interessado = interessadoService.buscarPorCpf(interessadoDTO.getCpf());
-
-            EnvioDTO envioDTO = new EnvioDTO();
-
-            envioDTO.setDocumenthash(Arrays.toString(documentHash));
-        //    envioDTO.setInteressado(interessado);
-            envioDTO.setDadosBasicos(dadosBasicosGravar);
-            envioDTO.setIdfluxo(idAleatorio);
-            envioDTO.setStatus("iniciado");
-
-            LOG.info("Arquivo PDF salvo com sucesso em: " + Arrays.toString(documentHash));
-
-            // Enviar dados para Kafka
-            //  String kafkaMessage = String.format("CPF: %s, Document Hash: %s",
-            //          interessadobandoDTO.getCpf(),
-            //         Arrays.toString(documentHash)); // Enviando o hash original como string
-            //      kafkaConfig.sendMessage(  Arrays.toString(documentHash));
-
-            EnvioPandasDTO envioPandasDTO = new EnvioPandasDTO();
-            envioPandasDTO.setCpf(Long.valueOf(interessadobandoDTO.getCpf()));
-            envioPandasDTO.setIdFluxo(envioDTO.getIdfluxo());
-            envioPandasDTO.setStatus(envioDTO.getStatus());
-            kafkaConfig.sendMessage(envioPandasDTO);
-            envioService.InseerirEnvio(envioDTO);
-
-            String outputDirectory = "/app/pdfs/"; // Diretório dentro do contêiner do Nginx
-            String outputFilePath = outputDirectory + interessado.getCpf() + ".pdf";
-
-            try (FileOutputStream fos = new FileOutputStream(new File(outputFilePath))) {
-                fos.write(pdfBytes);
-            } catch (IOException e) {
-                LOG.info("Arquivo PDF salvo com sucesso em: " + documentSaved);
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity(createErrorResponse("Error saving file"))
-                        .build();
-            }
-
-
-            try (FileOutputStream fos = new FileOutputStream(new File(outputFilePath))) {
-                fos.write(pdfBytes);
-            } catch (IOException e) {
-                LOG.info("Arquivo PDF salvo com sucesso em: " + outputDirectory);
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity(createErrorResponse("Error saving file"))
-                        .build();
-            }
-
+            // Chamar o serviço para processar o envio
+            envioService.processarEnvio(envioDTO, documentHash, documentSaved, idAleatorio);
 
             // Criar resposta
             SignatureResponse response = new SignatureResponse();
-            //  response.setSignature(signature);
-            //  response.setSignedPdf(Base64.getEncoder().encodeToString(signedPdf));
-            response.setPublicKey(Base64.getEncoder().encodeToString(rsaService.getPublicKey().getEncoded()));
-            response.setMessage(" Sua solicitação foi gerada, favor aguardar um email para fazer assinatura :" + envioDTO.getStatus());
-
-
-            // to-do fazer a inserção na base
-
-
+            response.setMessage("Sua solicitação foi gerada, favor aguardar um email para fazer assinatura.");
             return Response.ok(response.getMessage()).build();
 
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             LOG.error("Erro no processo de assinatura", e);
-            LOG.info("Enviando solicitação de cancelamento para o Orquestrador");
-
-
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse(e.getMessage()))
                     .build();
         }
     }
+
 
     private Object createErrorResponse(String message) {
         SignatureResponse response = new SignatureResponse();
@@ -241,46 +120,15 @@ public class DocumentSignatureResource {
         return response;
     }
 
-    @GET
-    @Path("/download/{id}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response downloadDocument(@PathParam("id") Long documentId) {
-        try {
-            // Recuperar o documento do banco de dados usando o id
-            Documentos document = documentoService.buscarId(documentId);
 
-            if (document == null || document.getArquivopdf() == null) {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("File not found")
-                        .build();
-            }
 
-            byte[] pdfBytes = document.getArquivopdf(); // Obtendo o byte[]
 
-            // Retornar o byte[] como um InputStream
-            InputStream inputStream = new ByteArrayInputStream(pdfBytes);
 
-            // Retornar a resposta com o arquivo PDF
-            return Response.ok(inputStream)
-                    .header("Content-Disposition", "attachment; filename=\"documento_" + documentId + ".pdf\"")
-                    .build();
-        } catch (Exception e) {
-            LOG.error("Erro ao tentar baixar o arquivo", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error while downloading the file")
-                    .build();
-        }
     }
 
 
-    @GET
-    @Path("/download/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Documentos BuscarDocumentos(Long id) {
-
-        Documentos document = documentoService.buscarId(id);
-        return document;
-    }
 
 
-}
+   
+
+

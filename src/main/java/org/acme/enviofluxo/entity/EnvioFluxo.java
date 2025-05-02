@@ -46,17 +46,15 @@ public class EnvioFluxo extends PanacheEntityBase implements Serializable {
     private List<ItemEnvioFluxo> items;
 
 
-    public  EnvioFluxo(EnvioDTO envioDTO){
-        this.documenthash =  envioDTO.getDocumenthash();
-       // this.interessado = envioDTO.getInteressado();
-        this.dadosBasicos= envioDTO.getDadosBasicos();
-        this.idfluxo  = envioDTO.getIdfluxo();
-        this.status = envioDTO.getStatus();
 
-    }
 
     public static DadosBasicos findByCpf(Long id) {
         return find("id", id).firstResult();
     }
 
+
+    public EnvioFluxo(DadosBasicos dadosBasicos) {
+        this.dadosBasicos = dadosBasicos;
+        // Inicializar outros atributos, se necessário
+    }
 }

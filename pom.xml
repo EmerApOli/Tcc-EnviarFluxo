@@ -43,6 +43,13 @@
             <artifactId>quarkus-hibernate-orm-panache</artifactId>
             <version>3.17.5</version> <!-- Verifique por versões mais recentes -->
         </dependency>
+
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>3.1.0</version> <!-- Verifique a versão mais recente -->
+        </dependency>
+
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jdbc-postgresql</artifactId>

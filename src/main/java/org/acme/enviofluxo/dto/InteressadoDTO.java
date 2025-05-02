@@ -9,40 +9,22 @@ import org.acme.enviofluxo.entity.Interessado;
 import java.io.Serializable;
 
 @Data
-@Builder
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper=false)
-public class InteressadoDTO implements Serializable {
 
-    private  String cpf;
+public class InteressadoDTO  {
 
-    private  String nome;
+    private String cpf;
 
-    private  String descricao;
+    private String nome;
 
-    private String  cargo;
+    private String descricao;
 
-    private  String idenviofluxo;
+    private String cargo;
+
+    private String idenviofluxo;
 
     private Documentos documentos;
 
 
 
-
-    public  InteressadoDTO(Interessado interessado){
-
-        this.cpf = interessado.getCpf();
-        this.nome = interessado.getNome();
-        this.descricao = interessado.getDescricao();
-        this.cargo = interessado.getCargo();
-        this.idenviofluxo = interessado.getIdenviofluxo();
-        this.documentos = interessado.getDocumento();
-
-
-
-
-    }
-
-    public InteressadoDTO(){}
 
 }

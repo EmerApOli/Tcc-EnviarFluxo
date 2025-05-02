@@ -14,5 +14,5 @@ public class DadosEnvioGeralDTO {
 
 
     private DadosBasicosDTO  dadosBasicosDTO;
-    private  InteressadoDTO interessadoDTO;
+
 }

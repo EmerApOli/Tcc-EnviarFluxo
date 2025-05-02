@@ -16,9 +16,9 @@ services:
   assinar-db:
     container_name: assinar-db
     image: postgres:latest
+    restart: always
     environment:
       POSTGRES_DB: assinar-db
-      POSTGRES_HOST: assinar-db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       PGDATA: /data/postgres
@@ -30,9 +30,9 @@ services:
   enviar-db:
     container_name: enviar-db
     image: postgres:latest
+    restart: always
     environment:
       POSTGRES_DB: enviar-db
-      POSTGRES_HOST: enviar-db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       PGDATA: /data/postgres
@@ -44,7 +44,7 @@ services:
   kafka:
     container_name: kafka
     image: obsidiandynamics/kafka
-    restart: "no"
+    restart: always
     ports:
       - "2181:2181"
       - "9092:9092"
@@ -62,9 +62,17 @@ services:
     volumes:
       - ./data/kafka/data:/var/lib/kafka/data
 
-
-
-
+  algasensors-rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+    volumes:
+      - algasensors-rabbitmq:/var/lib/rabbitmq/
 
   redpanda-console:
     container_name: redpanda
@@ -95,7 +103,6 @@ services:
     environment:
       KAFKA_BROKER: kafka:29092
       POSTGRES_DB: enviar-db
-      POSTGRES_HOST: enviar-db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -103,6 +110,7 @@ services:
     volumes:
       - ./data/assinados:/app/pdfs/assinados
       - ./data/pdfs:/app/pdfs
+
   orchestrator-service:
     container_name: orchestrator-service
     image: orchestrator-service:latest
@@ -127,7 +135,6 @@ services:
     environment:
       KAFKA_BROKER: kafka:29092
       POSTGRES_DB: enviar-db
-      POSTGRES_HOST: enviar-db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -140,13 +147,13 @@ services:
       - orchestrator-saga
     volumes:
       - ./data/pdfs:/app/pdfs      # Mapeia o diretório de PDFs
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      # Arquivo de configuração do Nginx
+      - ./nginx.conf:/etc/nginx/nginx.conf  # Arquivo de configuração do Nginx
     ports:
       - "8085:80"
-
-
 
 networks:
   orchestrator-saga:
     driver: bridge
+
+volumes:
+  algasensors-rabbitmq:
