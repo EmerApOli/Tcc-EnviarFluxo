@@ -15,6 +15,6 @@ public class DocumentoDTO {
 
 
     private byte[]  arquivopdf;
-
+   // private String status;
 
 }

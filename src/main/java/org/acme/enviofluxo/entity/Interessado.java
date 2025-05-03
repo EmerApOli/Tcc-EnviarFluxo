@@ -41,6 +41,12 @@ public class Interessado extends PanacheEntityBase implements Serializable {
     @JoinColumn(name = "id_documento", nullable = false)
     private Documentos  documento;
 
+    @ManyToOne
+    @JoinColumn(name = "id_selo", nullable = false)
+    private Selo  selo;
+
+
+
 
     public  Interessado(InteressadoDTO interessadoDTO){
 

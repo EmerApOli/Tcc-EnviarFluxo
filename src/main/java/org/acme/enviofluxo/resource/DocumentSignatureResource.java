@@ -11,18 +11,12 @@ import jakarta.ws.rs.core.Response;
 import org.acme.KafkaConfig.KafkaConfig;
 import org.acme.enviofluxo.dto.*;
 import org.acme.enviofluxo.blockchainservice.Blockchain;
-import org.acme.enviofluxo.entity.DadosBasicos;
-import org.acme.enviofluxo.entity.Documentos;
-import org.acme.enviofluxo.entity.EnvioFluxo;
-import org.acme.enviofluxo.entity.Interessado;
+import org.acme.enviofluxo.entity.*;
 import org.acme.enviofluxo.external.DTO.EnvioPandasDTO;
 import org.acme.enviofluxo.rsaassinarservice.PDFService;
 import org.acme.enviofluxo.rsaassinarservice.RSAService;
 import org.acme.enviofluxo.rsaassinarservice.SignatureResponse;
-import org.acme.enviofluxo.services.DadosBasicosService;
-import org.acme.enviofluxo.services.DocumentoService;
-import org.acme.enviofluxo.services.EnvioService;
-import org.acme.enviofluxo.services.InteressadoService;
+import org.acme.enviofluxo.services.*;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
@@ -60,6 +54,9 @@ public class DocumentSignatureResource {
     @Inject
     DocumentoService documentoService;
 
+    @Inject
+    SeloService seloService;
+
 
     @POST
     @Path("/sign")
@@ -94,10 +91,13 @@ public class DocumentSignatureResource {
             ObjectMapper objectMapper = new ObjectMapper();
             EnvioDTO envioDTO = objectMapper.readValue(jsonPayload, EnvioDTO.class);
 
+            SeloDTO   seloDTO = seloService.PegarSelo(envioDTO);
+          // Selo selo =  seloService.salvarSelo(seloDTO);
+
             String idAleatorio = UUID.randomUUID().toString();
 
             // Chamar o serviço para processar o envio
-            envioService.processarEnvio(envioDTO, documentHash, documentSaved, idAleatorio);
+            envioService.processarEnvio(envioDTO, seloDTO, documentHash, documentSaved, idAleatorio);
 
             // Criar resposta
             SignatureResponse response = new SignatureResponse();

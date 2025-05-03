@@ -1,5 +1,6 @@
 package org.acme.enviofluxo.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,8 @@ import java.util.List;
 @NoArgsConstructor // Gera um construtor sem parâmetros
 public class EnvioDTO {
 
+    @JsonProperty("dadosBasicosDTO")
     private DadosBasicosDTO dadosBasicosDTO;
+    @JsonProperty("itens")
     private List<ItemDTO> itens;
 }

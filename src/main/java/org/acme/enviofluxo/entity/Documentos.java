@@ -31,6 +31,8 @@ public class Documentos  extends PanacheEntityBase implements Serializable {
 
     @JoinColumn(name = "arquivopdf")
     private byte[]  arquivopdf;
+   // @JoinColumn(name = "status")
+    //private String status;
 
     public Documentos(DocumentoDTO documentoDTO){
         this.arquivopdf = documentoDTO.getArquivopdf();

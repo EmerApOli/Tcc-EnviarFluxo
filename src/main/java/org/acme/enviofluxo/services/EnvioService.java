@@ -21,15 +21,18 @@ public class EnvioService {
     @Inject
     private DadosBasicosService dadosBasicosService;
 
+    @Inject
+    SeloService seloService;
 
 
     @Inject
     private DocumentoService documentosService; // ou o serviço que você usar para Documentos
 
     @Transactional
-    public void processarEnvio(EnvioDTO envioDTO, byte[] documentHash, Documentos documentSaved, String idAleatorio) throws Exception {
+    public void processarEnvio(EnvioDTO envioDTO,  SeloDTO seloDTO, byte[] documentHash, Documentos documentSaved, String idAleatorio) throws Exception {
         // Criar e salvar DadosBasicos
         DadosBasicos dadosBasicos = modelMapper.map(envioDTO.getDadosBasicosDTO(), DadosBasicos.class);
+
         dadosBasicosService.create(dadosBasicos);
 
 
@@ -43,11 +46,16 @@ public class EnvioService {
         envioFluxo.persist();
 
 
+
+
         // Processar cada item
         for (ItemDTO item : envioDTO.getItens()) {
             Interessado interessado = modelMapper.map(item.getInteressadoDTO(), Interessado.class);
+            Selo selo =  modelMapper.map(item.getInteressadoDTO().getSeloDTO(), Selo.class);
+            seloService.salvarSelo(selo);
             interessado.setIdenviofluxo(idAleatorio); // Setar o ID aleatório
-            interessado.setDocumento(documentSaved); // Associar o documento salvo
+            interessado.setDocumento(documentSaved);
+            interessado.setSelo(selo);// Associar o documento salvo
             interessadoService.SalvarInteressado(interessado);
             ItemEnvioFluxo itemEnvioFluxo = new ItemEnvioFluxo(envioFluxo, interessado);
             itemEnvioFluxo.persist();
