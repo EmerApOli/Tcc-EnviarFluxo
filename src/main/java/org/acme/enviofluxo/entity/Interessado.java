@@ -26,8 +26,8 @@ public class Interessado extends PanacheEntityBase implements Serializable {
   //  @Column(name = "id")
   //  private  Long  id;
     @Id // Define 'cpf' como chave primária
-    @Column(name = "cpf", unique = true, nullable = false)
-     private  String cpf;
+    @Column(name = "cpf")
+     private  Long cpf;
     @Column(name = "nome")
     private  String nome;
     @Column(name = "descricao")

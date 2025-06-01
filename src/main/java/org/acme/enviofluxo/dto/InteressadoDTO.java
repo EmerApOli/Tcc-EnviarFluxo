@@ -14,7 +14,7 @@ import java.io.Serializable;
 
 public class InteressadoDTO  {
 
-    private String cpf;
+    private Long cpf;
 
     private String nome;
 
