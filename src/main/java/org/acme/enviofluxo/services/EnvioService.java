@@ -54,11 +54,11 @@ public class EnvioService {
             Selo selo =  modelMapper.map(item.getInteressadoDTO().getSeloDTO(), Selo.class);
             seloService.salvarSelo(selo);
             interessado.setIdenviofluxo(idAleatorio); // Setar o ID aleatório
-            interessado.setDocumento(documentSaved);
+           // interessado.setDocumento(documentSaved);
             interessado.setSelo(selo);// Associar o documento salvo
             interessadoService.SalvarInteressado(interessado);
-            ItemEnvioFluxo itemEnvioFluxo = new ItemEnvioFluxo(envioFluxo, interessado);
-            itemEnvioFluxo.persist();
+            //ItemEnvioFluxo itemEnvioFluxo = new ItemEnvioFluxo(envioFluxo, interessado);
+          //  itemEnvioFluxo.persist();
         }
 
 

@@ -24,15 +24,15 @@ public  class ItemEnvioFluxo  extends PanacheEntityBase {
 
 
     @ManyToOne
-    @JoinColumn(name = "interessado_id")
-     private Interessado interessado;
+    @JoinColumn(name = "documento_id")
+     private Documentos documentos;
 
 
 
 
-    public ItemEnvioFluxo(EnvioFluxo enviofluxo, Interessado interessado) {
+    public ItemEnvioFluxo(EnvioFluxo enviofluxo, Documentos documentos) {
         this.enviofluxo = enviofluxo;
-        this.interessado = interessado;
+        this.documentos = documentos;
         // Inicializar outros atributos, se necessário
     }
 

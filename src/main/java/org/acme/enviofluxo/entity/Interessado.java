@@ -9,6 +9,7 @@ import org.acme.enviofluxo.dto.EnvioDTO;
 import org.acme.enviofluxo.dto.InteressadoDTO;
 
 import java.io.Serializable;
+import java.util.List;
 
 
 @Data
@@ -37,9 +38,8 @@ public class Interessado extends PanacheEntityBase implements Serializable {
     @Column(name = "idenviofluxo")
    private  String idenviofluxo;
 
-    @ManyToOne
-    @JoinColumn(name = "id_documento", nullable = false)
-    private Documentos  documento;
+    @OneToMany(mappedBy = "interessados", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Documentos> interessados;
 
     @ManyToOne
     @JoinColumn(name = "id_selo", nullable = false)
@@ -55,7 +55,7 @@ public class Interessado extends PanacheEntityBase implements Serializable {
         this.descricao = interessadoDTO.getDescricao();
         this.cargo = interessadoDTO.getCargo();
         this.idenviofluxo = interessadoDTO.getIdenviofluxo();
-        this.documento  = interessadoDTO.getDocumentos();
+        this.interessados  = interessadoDTO.getDocumentos();
 
 
 

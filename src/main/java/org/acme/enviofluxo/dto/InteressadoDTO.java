@@ -9,6 +9,7 @@ import org.acme.enviofluxo.entity.Interessado;
 import org.acme.enviofluxo.entity.Selo;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 
@@ -24,7 +25,7 @@ public class InteressadoDTO  {
 
     private String idenviofluxo;
 
-    private Documentos documentos;
+    private List<Documentos> documentos;
     @JsonProperty("selo")
     private SeloDTO  seloDTO;
 

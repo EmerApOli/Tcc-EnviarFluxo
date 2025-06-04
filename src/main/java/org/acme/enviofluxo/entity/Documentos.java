@@ -9,6 +9,7 @@ import org.acme.enviofluxo.dto.DadosBasicosDTO;
 import org.acme.enviofluxo.dto.DocumentoDTO;
 
 import java.io.Serializable;
+import java.util.List;
 
 
 @Data
@@ -31,8 +32,9 @@ public class Documentos  extends PanacheEntityBase implements Serializable {
 
     @JoinColumn(name = "arquivopdf")
     private byte[]  arquivopdf;
-   // @JoinColumn(name = "status")
-    //private String status;
+
+    private  Interessado interessados;
+
 
     public Documentos(DocumentoDTO documentoDTO){
         this.arquivopdf = documentoDTO.getArquivopdf();
