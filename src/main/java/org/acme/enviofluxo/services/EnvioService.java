@@ -1,69 +1,72 @@
 package org.acme.enviofluxo.services;
 
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.acme.enviofluxo.dto.*;
-import org.acme.enviofluxo.entity.*;
-import org.modelmapper.ModelMapper;
+import org.acme.enviofluxo.dto.EnvioDTO;
+import org.acme.enviofluxo.entity.Documentos;
+import org.acme.enviofluxo.entity.EnvioFluxo;
+import org.acme.enviofluxo.entity.Interessado;
+import org.acme.enviofluxo.entity.Selo;
+import org.acme.enviofluxo.repository.EnvioRepositry;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 @ApplicationScoped
 public class EnvioService {
 
-    private final ModelMapper modelMapper = new ModelMapper();
-
     @Inject
-    private InteressadoService interessadoService;
-
-    @Inject
-    private DadosBasicosService dadosBasicosService;
-
-    @Inject
-    SeloService seloService;
-
-
-    @Inject
-    private DocumentoService documentosService; // ou o serviço que você usar para Documentos
-
+    EnvioRepositry envioFluxoRepository; // Repositório para EnvioFluxo
     @Transactional
-    public void processarEnvio(EnvioDTO envioDTO,  SeloDTO seloDTO, byte[] documentHash, Documentos documentSaved, String idAleatorio) throws Exception {
-        // Criar e salvar DadosBasicos
-        DadosBasicos dadosBasicos = modelMapper.map(envioDTO.getDadosBasicosDTO(), DadosBasicos.class);
-
-        dadosBasicosService.create(dadosBasicos);
-
-
+    public EnvioFluxo saveEnvio(EnvioDTO envioDTO) {
+        // Cria uma nova instância de EnvioFluxo
         EnvioFluxo envioFluxo = new EnvioFluxo();
-        envioFluxo.setIdfluxo(idAleatorio);
-        envioFluxo.setDocumenthash(Arrays.toString(documentHash)); // Ajuste conforme necessário
-        envioFluxo.setStatus("iniciado");
-        envioFluxo.setDadosBasicos(dadosBasicos);
+        envioFluxo.setDocumenthash("hash-do-documento"); // Defina o hash do documento conforme necessário
+        envioFluxo.setStatus("Pendente"); // Defina o status conforme necessário
 
-        // Persistir EnvioFluxo
-        envioFluxo.persist();
+        List<Documentos> documentosList = new ArrayList<>();
 
+        // Percorre cada documento no EnvioDTO
+        for (EnvioDTO.DocumentoDTO documentoDTO : envioDTO.getDocumentoDTOS()) {
+            Documentos documento = new Documentos();
+            documento.setNomearquivo(documentoDTO.getNomeDocumento());
 
+            List<Interessado> interessadosList = new ArrayList<>();
+            for (EnvioDTO.InteressadoDTO interessadoDTO : documentoDTO.getInteressadoDTO()) {
+                Interessado interessado = new Interessado();
+                interessado.setCpf(interessadoDTO.getCpf());
+                interessado.setNome(interessadoDTO.getNome());
+                interessado.setDescricao(interessadoDTO.getDescricao());
+                interessado.setCargo(interessadoDTO.getCargo());
 
+                // Cria o selo e associa ao interessado
+                Selo selo = new Selo();
+                selo.setPagina(interessadoDTO.getSeloDTO().getPagina());
+                selo.setX(interessadoDTO.getSeloDTO().getX());
+                selo.setY(interessadoDTO.getSeloDTO().getY());
+                selo.setLargura(interessadoDTO.getSeloDTO().getLargura());
+                selo.setAltura(interessadoDTO.getSeloDTO().getAltura());
+                interessado.setSelo(selo);
 
-        // Processar cada item
-        for (ItemDTO item : envioDTO.getItens()) {
-            Interessado interessado = modelMapper.map(item.getInteressadoDTO(), Interessado.class);
-            Selo selo =  modelMapper.map(item.getInteressadoDTO().getSeloDTO(), Selo.class);
-            seloService.salvarSelo(selo);
-            interessado.setIdenviofluxo(idAleatorio); // Setar o ID aleatório
-           // interessado.setDocumento(documentSaved);
-            interessado.setSelo(selo);// Associar o documento salvo
-            interessadoService.SalvarInteressado(interessado);
-            //ItemEnvioFluxo itemEnvioFluxo = new ItemEnvioFluxo(envioFluxo, interessado);
-          //  itemEnvioFluxo.persist();
+                // Adiciona o interessado à lista
+                interessadosList.add(interessado);
+            }
+
+            // Associa a lista de interessados ao documento
+            documento.setInteressados(interessadosList);
+            documento.setEnviofluxo(envioFluxo); // Associa o documento ao EnvioFluxo
+
+            // Adiciona o documento à lista de documentos
+            documentosList.add(documento);
         }
 
+        // Associa a lista de documentos ao EnvioFluxo
+        envioFluxo.setListadocumento(documentosList);
 
+        // Persiste o EnvioFluxo
+        envioFluxoRepository.persist(envioFluxo);
 
-
-
+        return envioFluxo; // Retorna o objeto persistido
     }
 }

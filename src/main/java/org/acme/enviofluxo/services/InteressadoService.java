@@ -3,8 +3,6 @@ package org.acme.enviofluxo.services;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.acme.enviofluxo.dto.InteressadoDTO;
-import org.acme.enviofluxo.entity.EnvioFluxo;
 import org.acme.enviofluxo.entity.Interessado;
 import org.acme.enviofluxo.repository.InteressadoRepository;
 

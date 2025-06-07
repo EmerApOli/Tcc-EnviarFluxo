@@ -1,12 +1,9 @@
 package org.acme.enviofluxo.entity;
 
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import io.quarkus.hibernate.orm.panache.PanacheEntity_;
 import jakarta.persistence.*;
 import lombok.*;
-import org.acme.enviofluxo.dto.EnvioDTO;
 
 import java.io.Serializable;
 import java.util.List;
@@ -26,24 +23,19 @@ public class EnvioFluxo extends PanacheEntityBase implements Serializable {
     @Column(name = "id")
     private  long id;
 
-    @Column(name = "idfluxo")
-    private  String idfluxo;
-
-     @Column(name = "documenthash")
+    @Column(name = "documenthash")
     private  String documenthash;
 
 
     @Column(name = "status")
     private  String status;
 
-    @ManyToOne
-    @JoinColumn(name = "id_dadosbasicos", nullable = false)
-    private DadosBasicos  dadosBasicos;
+
 
 
 
     @OneToMany(mappedBy = "enviofluxo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ItemEnvioFluxo> items;
+    private List<Documentos> listadocumento;
 
 
 
@@ -53,8 +45,4 @@ public class EnvioFluxo extends PanacheEntityBase implements Serializable {
     }
 
 
-    public EnvioFluxo(DadosBasicos dadosBasicos) {
-        this.dadosBasicos = dadosBasicos;
-        // Inicializar outros atributos, se necessário
-    }
 }

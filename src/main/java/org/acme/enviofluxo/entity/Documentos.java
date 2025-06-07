@@ -1,12 +1,12 @@
 package org.acme.enviofluxo.entity;
 
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.*;
-import org.acme.enviofluxo.dto.DadosBasicosDTO;
-import org.acme.enviofluxo.dto.DocumentoDTO;
+import org.acme.enviofluxo.dto.EnvioDTO;
+
 
 import java.io.Serializable;
 import java.util.List;
@@ -33,18 +33,22 @@ public class Documentos  extends PanacheEntityBase implements Serializable {
     @JoinColumn(name = "arquivopdf")
     private byte[]  arquivopdf;
 
-    private  Interessado interessados;
+    @ManyToOne
+    @JsonBackReference
+    private  EnvioFluxo enviofluxo;
+
+    @OneToMany(mappedBy = "documentos", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Interessado> interessados;
 
 
-    public Documentos(DocumentoDTO documentoDTO){
-        this.arquivopdf = documentoDTO.getArquivopdf();
-        this.nomearquivo = documentoDTO.getNomearquivo();
+
+
+
+
 
     }
 
-    public static Interessado findByCpf(Long id) {
-        return find("id", id).firstResult();
-    }
-}
+
+
 
 
