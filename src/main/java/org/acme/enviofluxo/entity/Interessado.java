@@ -36,7 +36,7 @@ public class Interessado extends PanacheEntityBase implements Serializable {
    private  String idenviofluxo;
 
    @ManyToOne()
-
+   @JoinColumn(name = "id_documento", nullable = false)
     private Documentos documentos;
 
     @ManyToOne(cascade = CascadeType.ALL) // Permite que o selo seja salvo automaticamente

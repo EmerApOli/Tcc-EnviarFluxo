@@ -40,6 +40,7 @@ public class EnvioService {
                 interessado.setDescricao(interessadoDTO.getDescricao());
                 interessado.setCargo(interessadoDTO.getCargo());
 
+
                 // Cria o selo e associa ao interessado
                 Selo selo = new Selo();
                 selo.setPagina(interessadoDTO.getSeloDTO().getPagina());
@@ -48,6 +49,7 @@ public class EnvioService {
                 selo.setLargura(interessadoDTO.getSeloDTO().getLargura());
                 selo.setAltura(interessadoDTO.getSeloDTO().getAltura());
                 interessado.setSelo(selo);
+                interessado.setDocumentos(documento);
 
                 // Adiciona o interessado à lista
                 interessadosList.add(interessado);
