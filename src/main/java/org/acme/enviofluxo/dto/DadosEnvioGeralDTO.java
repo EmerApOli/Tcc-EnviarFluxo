@@ -1,9 +1,7 @@
 package org.acme.enviofluxo.dto;
 
 
-import jakarta.persistence.Entity;
 import lombok.*;
-import org.acme.enviofluxo.entity.DadosBasicos;
 
 @Data
 @Builder

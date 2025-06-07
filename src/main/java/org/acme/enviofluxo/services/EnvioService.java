@@ -25,6 +25,7 @@ public class EnvioService {
         EnvioFluxo envioFluxo = new EnvioFluxo();
         envioFluxo.setDocumenthash("hash-do-documento");
         envioFluxo.setStatus("Pendente");
+        //envioFluxo.setProvedor(envioDTO.getProvedor());
 
         List<Documentos> documentosList = new ArrayList<>();
         Set<Long> cpfJaAdicionados = new HashSet<>(); // Para evitar duplicação de CPFs
@@ -32,6 +33,8 @@ public class EnvioService {
         for (EnvioDTO.DocumentoDTO documentoDTO : envioDTO.getDocumentoDTOS()) {
             Documentos documento = new Documentos();
             documento.setNomearquivo(documentoDTO.getNomeDocumento());
+            documento.setProvedor(documentoDTO.getProvedor());
+            documento.setEnviofluxo(envioFluxo);
 
             List<Interessado> interessadosList = new ArrayList<>();
             for (EnvioDTO.InteressadoDTO interessadoDTO : documentoDTO.getInteressadoDTO()) {

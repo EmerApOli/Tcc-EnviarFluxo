@@ -34,15 +34,15 @@ public class EnvioFluxo extends PanacheEntityBase implements Serializable {
 
 
 
+
     @OneToMany(mappedBy = "enviofluxo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Documentos> listadocumento;
 
 
 
 
-    public static DadosBasicos findByCpf(Long id) {
-        return find("id", id).firstResult();
+
     }
 
 
-}
+

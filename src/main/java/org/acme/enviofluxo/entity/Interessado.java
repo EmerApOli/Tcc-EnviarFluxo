@@ -1,6 +1,7 @@
 package org.acme.enviofluxo.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,10 +33,10 @@ public class Interessado extends PanacheEntityBase implements Serializable {
     private  String descricao;
     @Column(name = "cargo")
     private String  cargo;
-    @Column(name = "idenviofluxo")
-   private  String idenviofluxo;
+
 
    @ManyToOne()
+   @JsonIgnore
    @JoinColumn(name = "id_documento", nullable = false)
     private Documentos documentos;
 

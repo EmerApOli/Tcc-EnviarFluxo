@@ -40,6 +40,8 @@ public class DocumentSignatureResource {
     @Inject
     EnvioService envioService;
 
+    @Inject
+    DocumentoService documentoService;
 
 
     @POST
@@ -48,7 +50,7 @@ public class DocumentSignatureResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response signDocument(MultipartFormDataInput input) throws Exception {
         Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
-        List<InputPart> fileParts = uploadForm.get("file[]");
+        List<InputPart> fileParts = uploadForm.get("file");
         List<InputPart> dadosEnvioGeralParts = uploadForm.get("dadosenviogeral");
 
         if (fileParts == null || fileParts.isEmpty() || dadosEnvioGeralParts == null || dadosEnvioGeralParts.isEmpty()) {
@@ -108,7 +110,17 @@ public class DocumentSignatureResource {
     }
 
 
+    @GET
+    @Path("/por-cpf")
+    @Produces("application/json")
+    public Response getDocumentosPorCpf(@QueryParam("cpf") String cpf) {
+        List<Documentos> documentos = documentoService.findDocumentsByCpfAndProvider(cpf, "govbr");
+        return Response.ok(documentos).build();
     }
+}
+
+
+
 
 
 

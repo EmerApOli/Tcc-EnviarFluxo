@@ -30,18 +30,24 @@ public class Documentos  extends PanacheEntityBase implements Serializable {
     @JoinColumn(name = "nomearquivo")
     private String  nomearquivo;
 
+    @JoinColumn(name = "provedor")
+    private String  provedor;
+
     @JoinColumn(name = "arquivopdf")
     private byte[]  arquivopdf;
 
     @ManyToOne
     @JsonBackReference
+    @JoinColumn(name = "enviofluxo_id")
     private  EnvioFluxo enviofluxo;
 
     @OneToMany(mappedBy = "documentos", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Interessado> interessados;
 
 
-
+    public Long getEnvioFluxoId() {
+        return this.enviofluxo != null ? this.enviofluxo.getId() : null;
+    }
 
 
 

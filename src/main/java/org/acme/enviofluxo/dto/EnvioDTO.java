@@ -11,6 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class EnvioDTO {
+    @JsonProperty("provedor")
+    private  String provedor;
     @JsonProperty("documentoDTOS")
     private List<DocumentoDTO> documentoDTOS;
 
@@ -18,6 +20,8 @@ public class EnvioDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class DocumentoDTO {
+
+        private  String provedor;
         private String nomeDocumento; // Corrigido para 'nomeDocumento'
         private List<InteressadoDTO> interessadoDTO;
     }
