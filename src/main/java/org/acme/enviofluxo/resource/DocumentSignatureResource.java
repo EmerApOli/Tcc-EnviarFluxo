@@ -42,75 +42,56 @@ public class DocumentSignatureResource {
 
 
 
-
-
-
-
     @POST
     @Path("/sign")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response signDocument(MultipartFormDataInput input) throws Exception {
-        // Obter o arquivo do input multipart
         Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
-        List<InputPart> fileParts = uploadForm.get("file");
+        List<InputPart> fileParts = uploadForm.get("file[]");
         List<InputPart> dadosEnvioGeralParts = uploadForm.get("dadosenviogeral");
 
         if (fileParts == null || fileParts.isEmpty() || dadosEnvioGeralParts == null || dadosEnvioGeralParts.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        EnvioDTO envioDTO = new EnvioDTO(); // Cria uma nova instância de EnvioDTO
+        EnvioDTO envioDTO = new EnvioDTO();
         List<EnvioDTO.DocumentoDTO> documentoDTOS = new ArrayList<>();
 
         // Processar o payload JSON
         InputPart dadosEnvioGeralPart = dadosEnvioGeralParts.get(0);
         String jsonPayload = dadosEnvioGeralPart.getBodyAsString();
 
-        // Deserializar o JSON para um objeto EnvioDTO
         ObjectMapper objectMapper = new ObjectMapper();
         EnvioDTO dadosGerais = objectMapper.readValue(jsonPayload, EnvioDTO.class);
 
-        // Preencher envioDTO com dados gerais e documentos
-        envioDTO.setDocumentoDTOS(new ArrayList<>());
+        // Verifica se o número de arquivos e o número de interessados são compatíveis
+        if (fileParts.size() != dadosGerais.getDocumentoDTOS().size()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("O número de arquivos deve corresponder ao número de documentos.").build();
+        }
 
-// Processar cada arquivo
-        for (InputPart inputPart : fileParts) {
-            // Ler o arquivo
+        // Processar cada arquivo e associar ao respectivo interessado
+        for (int i = 0; i < fileParts.size(); i++) {
+            InputPart inputPart = fileParts.get(i);
             InputStream inputStream = inputPart.getBody(InputStream.class, null);
-            byte[] pdfBytes = inputStream.readAllBytes(); // Lê todos os bytes do InputStream
+            byte[] pdfBytes = inputStream.readAllBytes();
 
-            // Extrair o nome do arquivo
             String fileName = inputPart.getHeaders().get("Content-Disposition").get(0);
             String extractedFileName = extractFileName(fileName);
 
             // Criar DocumentoDTO
-            EnvioDTO.DocumentoDTO documentoDTO = new EnvioDTO.DocumentoDTO();
-            documentoDTO.setNomeDocumento(extractedFileName);
-
-            // Adicionar interessados do dadosGerais ao documentoDTO
-            if (dadosGerais.getDocumentoDTOS() != null && !dadosGerais.getDocumentoDTOS().isEmpty()) {
-                for (EnvioDTO.DocumentoDTO doc : dadosGerais.getDocumentoDTOS()) {
-                    if (doc.getInteressadoDTO() != null) {
-                        documentoDTO.setInteressadoDTO(doc.getInteressadoDTO());
-                    }
-                }
-            }
+            EnvioDTO.DocumentoDTO documentoDTO = dadosGerais.getDocumentoDTOS().get(i); // Obter o documento correspondente
+            documentoDTO.setNomeDocumento(extractedFileName); // Atualiza o nome do documento
 
             // Adicionar documentoDTO à lista
             documentoDTOS.add(documentoDTO);
         }
 
-// Preencher envioDTO com os documentos processados
         envioDTO.setDocumentoDTOS(documentoDTOS);
-        // Adicione outros dados gerais ao envioDTO se necessário
-        // Por exemplo, se houver outros atributos no EnvioDTO que você quiser preencher:
-        // envioDTO.setAlgumaInformacao(dadosGerais.getAlgumaInformacao());
 
-        // Chamar o serviço para salvar o envio
         EnvioFluxo envioFluxo = envioService.saveEnvio(envioDTO);
 
-        // Retornar resposta adequada
         return Response.ok().entity("Documentos processados e enviados com sucesso: " + envioFluxo.getId()).build();
     }
 
@@ -123,8 +104,11 @@ public class DocumentSignatureResource {
                 return fileName;
             }
         }
-        return null;
-}}
+        return null; // Retorna null se não encontrar o nome do arquivo
+    }
+
+
+    }
 
 
 

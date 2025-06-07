@@ -11,7 +11,9 @@ import org.acme.enviofluxo.entity.Selo;
 import org.acme.enviofluxo.repository.EnvioRepositry;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @ApplicationScoped
 public class EnvioService {
@@ -20,46 +22,47 @@ public class EnvioService {
     EnvioRepositry envioFluxoRepository; // Repositório para EnvioFluxo
     @Transactional
     public EnvioFluxo saveEnvio(EnvioDTO envioDTO) {
-        // Cria uma nova instância de EnvioFluxo
         EnvioFluxo envioFluxo = new EnvioFluxo();
-        envioFluxo.setDocumenthash("hash-do-documento"); // Defina o hash do documento conforme necessário
-        envioFluxo.setStatus("Pendente"); // Defina o status conforme necessário
+        envioFluxo.setDocumenthash("hash-do-documento");
+        envioFluxo.setStatus("Pendente");
 
         List<Documentos> documentosList = new ArrayList<>();
+        Set<Long> cpfJaAdicionados = new HashSet<>(); // Para evitar duplicação de CPFs
 
-        // Percorre cada documento no EnvioDTO
         for (EnvioDTO.DocumentoDTO documentoDTO : envioDTO.getDocumentoDTOS()) {
             Documentos documento = new Documentos();
             documento.setNomearquivo(documentoDTO.getNomeDocumento());
 
             List<Interessado> interessadosList = new ArrayList<>();
             for (EnvioDTO.InteressadoDTO interessadoDTO : documentoDTO.getInteressadoDTO()) {
-                Interessado interessado = new Interessado();
-                interessado.setCpf(interessadoDTO.getCpf());
-                interessado.setNome(interessadoDTO.getNome());
-                interessado.setDescricao(interessadoDTO.getDescricao());
-                interessado.setCargo(interessadoDTO.getCargo());
+                // Verifica se o interessado já foi adicionado pelo CPF
+                if (!cpfJaAdicionados.contains(interessadoDTO.getCpf())) {
+                    Interessado interessado = new Interessado();
+                    interessado.setCpf(interessadoDTO.getCpf());
+                    interessado.setNome(interessadoDTO.getNome());
+                    interessado.setDescricao(interessadoDTO.getDescricao());
+                    interessado.setCargo(interessadoDTO.getCargo());
 
+                    // Cria o selo e associa ao interessado
+                    Selo selo = new Selo();
+                    selo.setPagina(interessadoDTO.getSeloDTO().getPagina());
+                    selo.setX(interessadoDTO.getSeloDTO().getX());
+                    selo.setY(interessadoDTO.getSeloDTO().getY());
+                    selo.setLargura(interessadoDTO.getSeloDTO().getLargura());
+                    selo.setAltura(interessadoDTO.getSeloDTO().getAltura());
+                    interessado.setSelo(selo);
 
-                // Cria o selo e associa ao interessado
-                Selo selo = new Selo();
-                selo.setPagina(interessadoDTO.getSeloDTO().getPagina());
-                selo.setX(interessadoDTO.getSeloDTO().getX());
-                selo.setY(interessadoDTO.getSeloDTO().getY());
-                selo.setLargura(interessadoDTO.getSeloDTO().getLargura());
-                selo.setAltura(interessadoDTO.getSeloDTO().getAltura());
-                interessado.setSelo(selo);
-                interessado.setDocumentos(documento);
+                    // Associa o interessado ao documento
+                    interessado.setDocumentos(documento);
 
-                // Adiciona o interessado à lista
-                interessadosList.add(interessado);
+                    // Adiciona o interessado à lista
+                    interessadosList.add(interessado);
+                    cpfJaAdicionados.add(interessadoDTO.getCpf()); // Marca o CPF como adicionado
+                }
             }
 
             // Associa a lista de interessados ao documento
             documento.setInteressados(interessadosList);
-            documento.setEnviofluxo(envioFluxo); // Associa o documento ao EnvioFluxo
-
-            // Adiciona o documento à lista de documentos
             documentosList.add(documento);
         }
 
@@ -69,6 +72,5 @@ public class EnvioService {
         // Persiste o EnvioFluxo
         envioFluxoRepository.persist(envioFluxo);
 
-        return envioFluxo; // Retorna o objeto persistido
-    }
-}
+        return envioFluxo;
+}}
