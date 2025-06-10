@@ -18,11 +18,17 @@ public class DocumentosRepositoty  implements PanacheRepository<Documentos> {
 
         public List<Documentos> findDocumentsByCpfAndProvider(String cpf, String provider) {
             // Se o provider não for especificado, usa "govbr" como padrão
-            if (provider == null || provider.isEmpty()) {
-                provider = "govbr";
-            }
+
+
+
 
             return find("SELECT d FROM Documentos d JOIN d.interessados i WHERE i.cpf = ?1 AND d.provedor = ?2", cpf, provider).list();
+        }
+
+
+        public  List<Documentos> buscar(){
+
+            return findAll().list();
         }
 
 }

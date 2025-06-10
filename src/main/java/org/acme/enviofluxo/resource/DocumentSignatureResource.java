@@ -13,6 +13,7 @@ import org.acme.enviofluxo.dto.*;
 import org.acme.enviofluxo.blockchainservice.Blockchain;
 import org.acme.enviofluxo.entity.*;
 import org.acme.enviofluxo.external.DTO.EnvioPandasDTO;
+import org.acme.enviofluxo.repository.SeloRepository;
 import org.acme.enviofluxo.rsaassinarservice.PDFService;
 import org.acme.enviofluxo.rsaassinarservice.RSAService;
 import org.acme.enviofluxo.rsaassinarservice.SignatureResponse;
@@ -22,6 +23,8 @@ import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Path("/document")
@@ -43,6 +46,9 @@ public class DocumentSignatureResource {
     @Inject
     DocumentoService documentoService;
 
+
+    @Inject
+    SeloService seloService;
 
     @POST
     @Path("/sign")
@@ -81,11 +87,17 @@ public class DocumentSignatureResource {
 
             String fileName = inputPart.getHeaders().get("Content-Disposition").get(0);
             String extractedFileName = extractFileName(fileName);
+          //  String baseUrl = "http://localhost:8085/pdfs";
+            // Gravar o arquivo no diretório /app/pdfs
+            // Gravar o arquivo no diretório /app/pdfs
+            java.nio.file.Path filePath = Paths.get("/app/pdfs", extractedFileName); // Alterado para Paths.get()
+            Files.write(filePath, pdfBytes);
+
 
             // Criar DocumentoDTO
             EnvioDTO.DocumentoDTO documentoDTO = dadosGerais.getDocumentoDTOS().get(i); // Obter o documento correspondente
             documentoDTO.setNomeDocumento(extractedFileName); // Atualiza o nome do documento
-
+            //documentoDTO.setUrldoc(baseUrl//);
             // Adicionar documentoDTO à lista
             documentoDTOS.add(documentoDTO);
         }
@@ -114,9 +126,21 @@ public class DocumentSignatureResource {
     @Path("/por-cpf")
     @Produces("application/json")
     public Response getDocumentosPorCpf(@QueryParam("cpf") String cpf) {
-        List<Documentos> documentos = documentoService.findDocumentsByCpfAndProvider(cpf, "govbr");
+        List<DocumentosResumoDTO> documentos = documentoService.findDocumentsByCpfAndProvider(cpf, "govbr");
         return Response.ok(documentos).build();
+
     }
+    @GET
+    @Path("/selo")
+    @Produces("application/json")
+    public  Response buscarSelo(){
+        List<Selo> selo = seloService.buscarTodos();
+
+        return  Response.ok(selo).build();
+
+    }
+
+
 }
 
 

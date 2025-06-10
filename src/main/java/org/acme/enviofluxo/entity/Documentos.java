@@ -36,6 +36,9 @@ public class Documentos  extends PanacheEntityBase implements Serializable {
     @JoinColumn(name = "arquivopdf")
     private byte[]  arquivopdf;
 
+    @JoinColumn(name = "urldocumento")
+    String urldocumento;
+
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "enviofluxo_id")
@@ -47,6 +50,10 @@ public class Documentos  extends PanacheEntityBase implements Serializable {
 
     public Long getEnvioFluxoId() {
         return this.enviofluxo != null ? this.enviofluxo.getId() : null;
+    }
+
+    public String getStatusFluxo() {
+        return this.enviofluxo != null ? this.enviofluxo.getStatus() : null;
     }
 
 

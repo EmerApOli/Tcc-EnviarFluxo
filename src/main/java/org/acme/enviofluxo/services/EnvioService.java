@@ -26,7 +26,7 @@ public class EnvioService {
         envioFluxo.setDocumenthash("hash-do-documento");
         envioFluxo.setStatus("Pendente");
         //envioFluxo.setProvedor(envioDTO.getProvedor());
-
+        String baseUrl = "http://localhost:8085/app/pdfs";
         List<Documentos> documentosList = new ArrayList<>();
         Set<Long> cpfJaAdicionados = new HashSet<>(); // Para evitar duplicação de CPFs
 
@@ -35,7 +35,7 @@ public class EnvioService {
             documento.setNomearquivo(documentoDTO.getNomeDocumento());
             documento.setProvedor(documentoDTO.getProvedor());
             documento.setEnviofluxo(envioFluxo);
-
+            documento.setUrldocumento(baseUrl);
             List<Interessado> interessadosList = new ArrayList<>();
             for (EnvioDTO.InteressadoDTO interessadoDTO : documentoDTO.getInteressadoDTO()) {
                 // Verifica se o interessado já foi adicionado pelo CPF

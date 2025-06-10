@@ -22,6 +22,7 @@ public class EnvioDTO {
     public static class DocumentoDTO {
 
         private  String provedor;
+        private  String urldoc;
         private String nomeDocumento; // Corrigido para 'nomeDocumento'
         private List<InteressadoDTO> interessadoDTO;
     }

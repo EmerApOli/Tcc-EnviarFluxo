@@ -7,6 +7,8 @@ import org.acme.enviofluxo.entity.Selo;
 import org.acme.enviofluxo.repository.SeloRepository;
 import org.modelmapper.ModelMapper;
 
+import java.util.List;
+
 @ApplicationScoped
 public class SeloService {
     // Supondo que você tenha um repositório para selos
@@ -21,6 +23,14 @@ public class SeloService {
          return  selo;
     }
 
+
+
+
+    public List<Selo> buscarTodos() {
+
+        return  seloRepository.buscarTodos();
+
+    }
 
   //  public SeloDTO PegarSelo(EnvioDTO envioDTO){
 
