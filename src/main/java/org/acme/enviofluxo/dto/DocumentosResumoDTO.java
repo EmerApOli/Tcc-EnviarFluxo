@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DocumentosResumoDTO {
     private Long envioFluxoId;
-    private String cpf;
+    private Long cpf;
     private String url;
     private String provedor;
     private String nomeInteressado;

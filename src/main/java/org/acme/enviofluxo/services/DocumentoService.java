@@ -2,10 +2,8 @@ package org.acme.enviofluxo.services;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 
 import org.acme.enviofluxo.dto.DocumentosResumoDTO;
-import org.acme.enviofluxo.dto.EnvioDTO;
 import org.acme.enviofluxo.entity.Documentos;
 import org.acme.enviofluxo.entity.Interessado;
 import org.acme.enviofluxo.repository.DocumentosRepositoty;
@@ -20,7 +18,7 @@ public class DocumentoService {
 
     @Inject
     DocumentosRepositoty documentosRepositoty;
-    public List<DocumentosResumoDTO> findDocumentsByCpfAndProvider(String cpf, String provider) {
+    public List<DocumentosResumoDTO> findDocumentsByCpfAndProvider(Long cpf, String provider) {
         List<Documentos> documentos = documentosRepositoty.findDocumentsByCpfAndProvider(cpf, provider);
         return convertToResumoDTO(documentos); // Chama o método de conversão
     }
@@ -37,7 +35,7 @@ public class DocumentoService {
             for (Interessado interessado : documento.getInteressados()) {
                 DocumentosResumoDTO resumo = new DocumentosResumoDTO();
                 resumo.setEnvioFluxoId(documento.getEnvioFluxoId());
-                resumo.setCpf(String.valueOf(interessado.getCpf()));
+                resumo.setCpf(interessado.getCpf());
                 resumo.setUrl(documento.getUrldocumento());
                 resumo.setProvedor(documento.getProvedor());
                 resumo.setNomeInteressado(interessado.getNome());
@@ -46,6 +44,12 @@ public class DocumentoService {
         }
 
         return resumoList;
+    }
+
+
+    public Long findDocumentsByCpfAndProvider(Long id) {
+         Long idFluxoDocumento = documentosRepositoty.buscarIdFluxoDocumento(id);
+        return idFluxoDocumento; // Chama o método de conversão
     }
 
 }

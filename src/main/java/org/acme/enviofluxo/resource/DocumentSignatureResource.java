@@ -27,7 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-@Path("/document")
+@Path("/document/")
 @ApplicationScoped
 public class DocumentSignatureResource {
 
@@ -51,7 +51,7 @@ public class DocumentSignatureResource {
     SeloService seloService;
 
     @POST
-    @Path("/sign")
+    @Path("sign")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response signDocument(MultipartFormDataInput input) throws Exception {
@@ -80,6 +80,7 @@ public class DocumentSignatureResource {
         }
 
         // Processar cada arquivo e associar ao respectivo interessado
+        String outputDirectory = null;
         for (int i = 0; i < fileParts.size(); i++) {
             InputPart inputPart = fileParts.get(i);
             InputStream inputStream = inputPart.getBody(InputStream.class, null);
@@ -87,17 +88,17 @@ public class DocumentSignatureResource {
 
             String fileName = inputPart.getHeaders().get("Content-Disposition").get(0);
             String extractedFileName = extractFileName(fileName);
-          //  String baseUrl = "http://localhost:8085/pdfs";
+            outputDirectory = "/app/pdfs/";
             // Gravar o arquivo no diretório /app/pdfs
             // Gravar o arquivo no diretório /app/pdfs
-            java.nio.file.Path filePath = Paths.get("/app/pdfs", extractedFileName); // Alterado para Paths.get()
+            java.nio.file.Path filePath = Paths.get(outputDirectory, extractedFileName); // Alterado para Paths.get()
             Files.write(filePath, pdfBytes);
 
 
             // Criar DocumentoDTO
             EnvioDTO.DocumentoDTO documentoDTO = dadosGerais.getDocumentoDTOS().get(i); // Obter o documento correspondente
             documentoDTO.setNomeDocumento(extractedFileName); // Atualiza o nome do documento
-            //documentoDTO.setUrldoc(baseUrl//);
+            documentoDTO.setUrldoc(outputDirectory);
             // Adicionar documentoDTO à lista
             documentoDTOS.add(documentoDTO);
         }
@@ -125,8 +126,8 @@ public class DocumentSignatureResource {
     @GET
     @Path("/por-cpf")
     @Produces("application/json")
-    public Response getDocumentosPorCpf(@QueryParam("cpf") String cpf) {
-        List<DocumentosResumoDTO> documentos = documentoService.findDocumentsByCpfAndProvider(cpf, "govbr");
+    public Response getDocumentosPorCpf(@QueryParam("cpf") Long cpf) {
+        List<DocumentosResumoDTO> documentos = (List<DocumentosResumoDTO>) documentoService.findDocumentsByCpfAndProvider(cpf, "govbr");
         return Response.ok(documentos).build();
 
     }
