@@ -1,0 +1,26 @@
+{
+    "provedor": "govbr",
+    "documentoDTOS": [
+        {
+            "provedor": "govbr",
+
+            "nomeDocumento": "Documento Exemplo",
+            "interessadoDTO": [
+                {
+                    "cpf": 33394033892,
+                    "nome": "Nome do Interessado",
+                    "descricao": "Descrição do Interessado",
+                    "cargo": "Cargo do Interessado",
+                    "seloDTO": {
+                        "id": 1,
+                        "pagina": 1,
+                        "x": 100,
+                        "y": 200,
+                        "largura": 50,
+                        "altura": 50
+                    }
+                }
+            ]
+        }
+    ]
+}
