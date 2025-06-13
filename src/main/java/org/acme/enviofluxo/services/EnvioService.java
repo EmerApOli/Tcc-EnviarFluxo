@@ -38,7 +38,7 @@ public class EnvioService {
         envioFluxo.setDocumenthash("hash-do-documento");
         envioFluxo.setStatus("Pendente");
         //envioFluxo.setProvedor(envioDTO.getProvedor());
-        String baseUrl = "/app/pdfs/";
+        String baseUrl = "/app/pdfs";
         List<Documentos> documentosList = new ArrayList<>();
         Set<Long> cpfJaAdicionados = new HashSet<>(); // Para evitar duplicação de CPFs
         envioFluxoRepository.persist(envioFluxo);
@@ -82,7 +82,8 @@ public class EnvioService {
                     documentosResumoDTO.setUrl(baseUrl + "/" + documento.getNomearquivo()); // URL completa
                     documentosResumoDTO.setProvedor(documento.getProvedor());
                     documentosResumoDTO.setNomeInteressado(interessado.getNome());
-
+                    documentosResumoDTO.setNomedoc(documento.getNomearquivo().replace("\"", "").replace("'", ""));
+                    documentosResumoDTO.setStatuspedido(envioFluxo.getStatus());
                     kafkaConfig.sendMessage(documentosResumoDTO);
 
 

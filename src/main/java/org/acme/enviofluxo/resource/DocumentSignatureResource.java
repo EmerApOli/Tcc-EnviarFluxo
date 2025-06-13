@@ -91,7 +91,7 @@ public class DocumentSignatureResource {
             outputDirectory = "/app/pdfs/";
             // Gravar o arquivo no diretório /app/pdfs
             // Gravar o arquivo no diretório /app/pdfs
-            java.nio.file.Path filePath = Paths.get(outputDirectory, extractedFileName); // Alterado para Paths.get()
+            java.nio.file.Path filePath = Paths.get(outputDirectory, extractedFileName.replace("\"", "").replace("'", "")); // Alterado para Paths.get()
             Files.write(filePath, pdfBytes);
 
 

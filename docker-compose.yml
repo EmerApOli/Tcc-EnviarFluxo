@@ -94,7 +94,7 @@ services:
 
   assinador:
     container_name: assinadorservice
-    image: assinador:latest
+    image: assinadorfront:latest
     networks:
       - orchestrator-saga
     depends_on:
@@ -150,6 +150,14 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf  # Arquivo de configuração do Nginx
     ports:
       - "8085:80"
+  angular-app:
+    image: assinadorfront
+    container_name: assinadorfront
+    networks:
+      - orchestrator-saga
+
+    ports:
+      - "8087:80"
 
 networks:
   orchestrator-saga:

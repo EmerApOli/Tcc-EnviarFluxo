@@ -14,4 +14,6 @@ public class DocumentosResumoDTO {
     private String url;
     private String provedor;
     private String nomeInteressado;
+    private String nomedoc;
+    private  String statuspedido;
 }

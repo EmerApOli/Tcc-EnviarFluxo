@@ -39,6 +39,7 @@ public class DocumentoService {
                 resumo.setUrl(documento.getUrldocumento());
                 resumo.setProvedor(documento.getProvedor());
                 resumo.setNomeInteressado(interessado.getNome());
+                resumo.setNomedoc(documento.getNomearquivo());
                 resumoList.add(resumo);
             }
         }
